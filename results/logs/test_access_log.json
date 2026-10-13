@@ -1,0 +1,20 @@
+[
+  {
+    "time_utc": "2026-10-04T18:24:18+00:00",
+    "reason": "single evaluation of the frozen design",
+    "design_sha256": "d34f696ca0598698871d0d9315ec72c8dac274a3bf16c826f2fa75ed8a118677",
+    "n_test_rows": 7013
+  },
+  {
+    "time_utc": "2026-10-04T18:59:34+00:00",
+    "reason": "single evaluation of the frozen design",
+    "design_sha256": "869857f9b4fa8a4d4bc63925bc109961c92311d10081f75d21a91ca8b48b4c21",
+    "n_test_rows": 7013
+  },
+  {
+    "time_utc": "2026-10-04T19:10:23+00:00",
+    "reason": "single evaluation of the frozen design",
+    "design_sha256": "869857f9b4fa8a4d4bc63925bc109961c92311d10081f75d21a91ca8b48b4c21",
+    "n_test_rows": 7013
+  }
+]

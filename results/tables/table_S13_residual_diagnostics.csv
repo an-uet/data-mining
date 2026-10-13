@@ -1,0 +1,25 @@
+diagnostic,value
+Breusch-Pagan LM (residual^2 on prediction),321.5913063837482
+Breusch-Pagan p,6.520530073353936e-72
+"Spearman(|resid|, prediction)",0.3944961234171432
+resid std top / bottom prediction decile,6.5582391783256035
+Durbin-Watson,1.5975309121185834
+residual ACF lag 1,0.19925031515665265
+residual ACF lag 2,-0.03543497984690113
+residual ACF lag 3,-0.011330151751955083
+residual ACF lag 6,-0.024777971006976065
+residual ACF lag 12,0.0052847750624980035
+residual ACF lag 24,0.023800296362229502
+residual ACF lag 48,0.01453625848681228
+residual ACF lag 168,0.014239241891066753
+"Ljung-Box p, lag 1",2.831228955109806e-60
+"Ljung-Box p, lag 24",1.0609079853712076e-53
+"Ljung-Box p, lag 168",6.068080996122579e-43
+mean error (bias),0.8921754510150088
+share under-predicted,0.5416172985781991
+residual skewness,-0.6209899536437361
+residual excess kurtosis,36.17241684866143
+mean error when actual >= training P95,13.62628095467801
+MAE when actual >= training P95,26.482051769367178
+mean error when actual <= training P25,-1.7711171107762065
+MAE when actual <= training P25,5.466330782546687

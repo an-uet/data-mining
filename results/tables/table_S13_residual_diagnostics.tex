@@ -1,0 +1,36 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Residual diagnostics of the final model on the test period (error = actual $-$ predicted).}
+\label{tab:table_S13_residual_diagnostics}
+\begin{tabular}{lr}
+\toprule
+diagnostic & value \\
+\midrule
+Breusch-Pagan LM (residual\textasciicircum{}2 on prediction) & 321.6 \\
+Breusch-Pagan p & 6.521e-72 \\
+Spearman(\textbar{}resid\textbar{}, prediction) & 0.3945 \\
+resid std top / bottom prediction decile & 6.558 \\
+Durbin-Watson & 1.598 \\
+residual ACF lag 1 & 0.1993 \\
+residual ACF lag 2 & -0.03543 \\
+residual ACF lag 3 & -0.01133 \\
+residual ACF lag 6 & -0.02478 \\
+residual ACF lag 12 & 0.005285 \\
+residual ACF lag 24 & 0.0238 \\
+residual ACF lag 48 & 0.01454 \\
+residual ACF lag 168 & 0.01424 \\
+Ljung-Box p, lag 1 & 2.831e-60 \\
+Ljung-Box p, lag 24 & 1.061e-53 \\
+Ljung-Box p, lag 168 & 6.068e-43 \\
+mean error (bias) & 0.8922 \\
+share under-predicted & 0.5416 \\
+residual skewness & -0.621 \\
+residual excess kurtosis & 36.17 \\
+mean error when actual $\geq$ training P95 & 13.63 \\
+MAE when actual $\geq$ training P95 & 26.48 \\
+mean error when actual $\leq$ training P25 & -1.771 \\
+MAE when actual $\leq$ training P25 & 5.466 \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,5 @@
+Model,selected hyper-parameters,CV MAE,CV RMSE,CV R²,non-zero coef.,within 1 SE of best,selected
+OLS,-,10.62 ± 1.35,18.90 ± 2.77,0.9418 ± 0.0169,54/54,True,
+Ridge,"{""alpha"": 0.001}",10.62 ± 1.35,18.90 ± 2.77,0.9418 ± 0.0169,54/54,True,
+Lasso,"{""alpha"": 0.2154}",10.51 ± 1.29,19.00 ± 2.93,0.9414 ± 0.0160,29/54,True,★
+ElasticNet,"{""alpha"": 0.0001, ""l1_ratio"": 0.9}",10.62 ± 1.35,18.90 ± 2.77,0.9418 ± 0.0169,54/54,True,

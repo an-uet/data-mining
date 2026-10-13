@@ -1,0 +1,16 @@
+{
+  "seed": 42,
+  "finished_utc": "2026-10-04T19:14:09+00:00",
+  "runtime_minutes": 6.5,
+  "design_sha256": "869857f9b4fa8a4d4bc63925bc109961c92311d10081f75d21a91ca8b48b4c21",
+  "libraries": {
+    "python": "3.10.21",
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "scipy": "1.13.1",
+    "scikit-learn": "1.5.2",
+    "statsmodels": "0.14.4",
+    "matplotlib": "3.9.2"
+  },
+  "n_jobs": 8
+}

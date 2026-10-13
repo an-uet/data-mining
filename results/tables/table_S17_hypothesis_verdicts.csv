@@ -1,0 +1,5 @@
+hypothesis,comparison,delta_cv_mae_pct,folds_worse,predictive,inferential_test,inferential,verdict,"test_delta_mae_pct (descriptive, not used for the verdict)"
+H1,C vs C - PM2.5 history,96.95775378193854,5,True,joint Wald p < 1e-300,True,Supported,61.416893346310665
+H2,C vs C - environment block,1.4802192340409581,4,True,joint Wald p = 4e-115,True,Supported,0.05473829078381787
+H3,C vs C - calendar terms,0.4904096852632822,2,False,joint Wald p = 8.2e-53,True,Partly supported,-0.476538472620025
+H4,lag-only (C - rolling) relative to rolling-only (C - lag); negative = lag-only better,-0.860436778688134,0,False,"DM on out-of-fold |error| (rolling-only minus lag-only): mean +0.091, p = 1.6e-39",False,Not supported,-1.1695778987024008

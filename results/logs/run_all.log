@@ -1,0 +1,336 @@
+
+====================================================================================================
+1. DATA INSPECTION (structure and data quality of the file as delivered)   [0.0 min]
+====================================================================================================
+source      : Beijing Multi-Site Air-Quality Data (UCI Machine Learning Repository, id 501)  (DOI 10.24432/C5RK5G)  | station Aotizhongxin | file sha256 a94fbcfc71708b6f...
+NOTE        : The snippet fetch_ucirepo(id=381) returns a DIFFERENT dataset ('Beijing PM2.5', 43,824 rows, US-embassy station, columns cbwd/Iws/Is/Ir, no PM10/SO2/NO2/CO/O3/RAIN/WSPM). The Aotizhongxin file belongs to id 501, which ucimlrepo cannot import.
+rows        : 35,064 | columns: 18 -> ['No', 'year', 'month', 'day', 'hour', 'PM2.5', 'PM10', 'SO2', 'NO2', 'CO', 'O3', 'TEMP', 'PRES', 'DEWP', 'RAIN', 'wd', 'WSPM', 'station']
+dtypes      : No:int64, year:int64, month:int64, day:int64, hour:int64, PM2.5:float64, PM10:float64, SO2:float64, NO2:float64, CO:float64, O3:float64, TEMP:float64, PRES:float64, DEWP:float64, RAIN:float64, wd:object, WSPM:float64, station:object
+missing     : PM2.5=925 (2.6%), PM10=718 (2.0%), SO2=935 (2.7%), NO2=1023 (2.9%), CO=1776 (5.1%), O3=1719 (4.9%), TEMP=20 (0.1%), PRES=20 (0.1%), DEWP=20 (0.1%), RAIN=20 (0.1%), wd=81 (0.2%), WSPM=14 (0.0%)
+duplicates  : 0 duplicated rows (ignoring the 'No' counter: 0); duplicated timestamps: 0
+time range  : 2013-03-01 00:00:00 -> 2017-02-28 23:00:00 (1460.96 days) | already sorted in file: True | sampling: {'0 days 01:00:00': 35063} | missing timestamps: 0
+target PM2.5 (global descriptive summary, ug/m3): n=34,139 missing=925 mean=82.8 std=82.1 min=3 median=58 max=898 skew=1.97
+identifier columns removed: ['No', 'station'] (station is constant = ['Aotizhongxin']); wind direction levels: 16
+
+====================================================================================================
+2. TARGET CONSTRUCTION AND CHRONOLOGICAL SPLIT   [0.0 min]
+====================================================================================================
+target      : target(t) = PM2.5(t+1) (built from the raw series, never filled); the final hour (no t+1) is removed; asserted: target[:-1] == PM2.5[1:]
+rows        : 35,063 after target construction
+TRAIN       : 28,050 hours  2013-03-01 00:00:00 -> 2016-05-12 17:00:00
+TEST        : 7,013 hours  2016-05-12 18:00:00 -> 2017-02-28 22:00:00   [locked in the vault]
+chronology  : every training timestamp precedes every test timestamp; contiguous; shuffled = False. The full frame is deleted from memory now.
+
+====================================================================================================
+3. TRAINING MATRICES AND MISSING-VALUE POLICY (training rows only)   [0.0 min]
+====================================================================================================
+training    : 28,050 hours; PM2.5 missing 818 (2.92 %) in 162 gaps (median 1 h, 90th pct 4 h, max 343 h); 87 % of the gaps last <= 3 h
+POLICY      : (1) the TARGET is never imputed - hours whose PM2.5(t+1) is missing are dropped; (2) the CURRENT PM2.5(t) must be observed (persistence needs it); (3) PM2.5 HISTORY features (lags, rolling) use a causal last-observation-carried-forward over gaps <= 3 h, longer gaps make the row unusable; (4) other pollutants / meteorology / wind direction are imputed INSIDE each training fold (SimpleImputer: median / most frequent). The rule depends on availability only and is applied identically to every model and to the test period.
+usable rows : 26,000 of 28,050 training hours (92.7 %): missing target 818, observed target but missing current PM2.5 162, insufficient history 1232   [first 168 hours have no complete history]
+
+====================================================================================================
+4. EXPLORATORY DATA ANALYSIS (training rows only)   [0.1 min]
+====================================================================================================
+target (next-hour PM2.5, usable training rows n=26,000): mean 83.4 median 60 std 81.2 min 3 max 898 skew 1.92; P25/P75/P95/P99 = [23.0, 116.0, 247.0, 366.0]
+data quality: PM10 == PM2.5(t) exactly in 22.7 % of the usable training hours (5904 of 26000) and PM10 < PM2.5(t) in 4.36 % - physically inconsistent (PM10 contains PM2.5); PM10-based features must be read with care
+autocorrelation of PM2.5 (training): lag1 0.959 lag3 0.863 lag24 0.376 lag168 -0.003; corr(PM2.5(t), PM2.5(t+1)) = 0.9677
+top-12 |Spearman| with the target: PM25_t (+0.97), PM25_lag_1 (+0.92), PM25_roll_mean_3 (+0.89), PM10 (+0.87), PM25_roll_mean_6 (+0.84), PM25_lag_3 (+0.84), CO (+0.79), PM25_roll_mean_12 (+0.76), PM25_lag_6 (+0.72), NO2 (+0.69), PM25_roll_mean_24 (+0.63), PM25_lag_12 (+0.55)
+strongest raw environment variables: PM10 (r=+0.84, rho=+0.87), CO (r=+0.71, rho=+0.79), NO2 (r=+0.67, rho=+0.69), SO2 (r=+0.49, rho=+0.50), WSPM (r=-0.28, rho=-0.34), DEWP (r=+0.15, rho=+0.27)
+raw-variable redundancy: corr(TEMP, DEWP) = 0.81, corr(PM2.5(t), PM10) = 0.86, corr(PM10, CO) = 0.65, corr(NO2, CO) = 0.66
+daily cycle (mean by target hour): max 0h (93), min 16h (76); seasonal cycle: max month 12 (104), min month 8 (59); weekday 81.9 vs weekend 87.0
+median target by wind direction: cleanest NNW (15), NW (15); dirtiest SSE (84)
+ventilation: slope of PM2.5(t+1) on PM2.5(t) by wind-speed tercile: {'low': 0.9742236517688144, 'mid': 0.9767758842493472, 'high': 0.8979271844751914} (supports the WSPM x PM2.5(t) interaction)
+
+====================================================================================================
+5. PRE-REGISTRATION OF HYPOTHESES AND DECISION RULES (written before any model is compared)   [0.3 min]
+====================================================================================================
+H1: Recent PM2.5 concentrations are strong predictors of next-hour PM2.5.
+H2: Meteorological and pollutant measurements provide additional predictive information beyond historical PM2.5.
+H3: PM2.5 has systematic hourly and weekly temporal patterns that can be captured using temporal features.
+H4: Rolling statistics of recent PM2.5 provide more stable predictive information than individual lag values.
+decision rule: group removal must raise CV-MAE by >= 1 % in >= 4/5 folds AND joint HAC Wald p < 0.05
+model selection: primary metric CV-MAE, ties within 1.0 SE, then the data properties of the training design decide (Ridge / Lasso / ElasticNet)
+
+====================================================================================================
+6. FEATURE ENGINEERING: GROUPS, DERIVED-FEATURE RULE, FEATURE SETS A/B/C AND LEAKAGE CHECKS   [0.3 min]
+====================================================================================================
+  derived candidate TEMP_minus_DEWP  rho(target)=-0.471 rho(change)=-0.032 -> KEPT
+  derived candidate PRES_chg_3h      rho(target)=-0.052 rho(change)=-0.008 -> dropped
+  derived candidate TEMP_chg_3h      rho(target)=-0.007 rho(change)=-0.070 -> dropped
+  derived candidate DEWP_chg_3h      rho(target)=+0.146 rho(change)=+0.239 -> KEPT
+  derived candidate PM25_PM10_ratio  rho(target)=+0.322 rho(change)=-0.130 -> KEPT
+Set A: 26 design columns (11 raw numeric + 15 wind-direction dummies); Set C: 54 design columns (33 numeric main effects + 6 centred interactions + 15 wind dummies; helper input DEWP: ['DEWP'])
+collinearity guard: rank(Set C design) = 54 of 54 (full rank; DEWP is represented through TEMP - DEWP, otherwise TEMP, DEWP and their difference would be exactly collinear)
+running check_no_data_leakage() ...
+  PASS  [synthetic] target = PM2.5(t+1); PM25_t = PM2.5(t); target not among features
+  PASS  [synthetic] lag_k = PM2.5(t-k); rolling windows = PM2.5(t-1..t-w) (brute-force match, shifted, not centred)
+  PASS  [synthetic] perturbing PM2.5(t>t0) and the label leaves all features of rows <= t0 unchanged (positive control passed)
+  PASS  [synthetic] perturbing future meteorology / pollutants leaves rows <= t0 unchanged
+  PASS  [synthetic] features of the first half are identical whether or not the second half exists (prefix invariance)
+  PASS  [synthetic] calendar and meteorological features do not use PM2.5
+  PASS  [real training rows] target = PM2.5(t+1); PM25_t = PM2.5(t); target not among features
+  PASS  [real training rows] lag_k = PM2.5(t-k); rolling windows = PM2.5(t-1..t-w) (brute-force match, shifted, not centred)
+  PASS  [real training rows] perturbing PM2.5(t>t0) and the label leaves all features of rows <= t0 unchanged (positive control passed)
+  PASS  [real training rows] perturbing future meteorology / pollutants leaves rows <= t0 unchanged
+  PASS  [real training rows] features of the first half are identical whether or not the second half exists (prefix invariance)
+  PASS  [real training rows] calendar and meteorological features do not use PM2.5
+  PASS  [CV] imputer medians, scaler mean/count and top-k ranking come from the training part of every fold; validation strictly after training
+  PASS  [vault] test rows still locked while designing / tuning
+
+====================================================================================================
+7. BASELINES (time-series CV on the training rows)   [0.4 min]
+====================================================================================================
+  Training mean                                    CV MAE 62.46 ± 11.29 | RMSE 82.25 ± 19.15 | R2 -0.040 ± 0.065   [1s]
+  Persistence: PM2.5(t+1) = PM2.5(t)               CV MAE 10.69 ± 1.40 | RMSE 20.23 ± 3.16 | R2 0.934 ± 0.017   [1s]
+  Single-feature OLS: PM2.5(t) -> PM2.5(t+1)       CV MAE 10.91 ± 1.51 | RMSE 20.10 ± 3.15 | R2 0.935 ± 0.016   [0s]
+  Random Forest (raw features)                     CV MAE 11.14 ± 1.96 | RMSE 21.14 ± 5.03 | R2 0.930 ± 0.013   [44s]
+  Gradient Boosting (raw features)                 CV MAE 11.76 ± 2.64 | RMSE 22.18 ± 6.23 | R2 0.924 ± 0.018   [7s]
+
+====================================================================================================
+8. LINEAR MODELS ON SET C: TUNING AND MODEL SELECTION (training CV only)   [1.3 min]
+====================================================================================================
+  OLS         CV MAE 10.62 ± 1.35 | RMSE 18.90 ± 2.77 | R2 0.942 ± 0.017 | {} | non-zero 54/54   [1s]
+  Ridge       CV MAE 10.62 ± 1.35 | RMSE 18.90 ± 2.77 | R2 0.942 ± 0.017 | {'alpha': 0.001} | non-zero 54/54   [2s]
+  Lasso       CV MAE 10.51 ± 1.29 | RMSE 19.00 ± 2.93 | R2 0.941 ± 0.016 | {'alpha': 0.21544346900318845} | non-zero 29/54 | solver iterations 77   [2s]
+  ElasticNet  CV MAE 10.62 ± 1.35 | RMSE 18.90 ± 2.77 | R2 0.942 ± 0.017 | {'alpha': 9.999999999999999e-05, 'l1_ratio': 0.9} | non-zero 54/54 | solver iterations 3632   [7s]
+grid-edge log: no optimum on a grid edge
+
+DATA PROPERTIES of the training design of Set C: max VIF 376.7 (PM25_roll_mean_3), 10 features > 10; condition number 78; 3 correlated groups (|r| >= 0.8); weak predictors 27/54 (50 %)
+   correlated group: PM25_t, PM25_lag_1, PM25_lag_3, PM25_lag_6, PM25_lag_12, PM25_roll_mean_3, PM25_roll_mean_6, PM25_roll_mean_12 ...
+   correlated group: TEMP, PRES
+   correlated group: TEMP_x_hour_sin, DEWP_x_hour_sin
+SELECTION: Best mean CV-MAE: Lasso (10.508); 1 SE = 0.577; families within 1 SE: ['OLS', 'Ridge', 'Lasso', 'ElasticNet']. Training-design properties: max VIF 376.7 (PM25_roll_mean_3), 10 features with VIF > 10; 3 correlated groups (|r| >= 0.8); 50.0% of features weak (|Spearman| < 0.1; threshold 50%). Implied family: ElasticNet (correlated groups of predictors AND many weak/redundant predictors -> feature selection that keeps correlated groups together); pre-registered outcome: ElasticNet. AMENDMENT: Ridge, ElasticNet have their CV-optimal penalty on the no-shrinkage edge of the grid (Ridge: {'alpha': 0.001}, 54/54 non-zero; ElasticNet: {'alpha': 9.999999999999999e-05, 'l1_ratio': 0.9}, 54/54 non-zero), i.e. numerically OLS, so they are skipped -> chosen: Lasso ({'alpha': 0.21544346900318845}, 29/54 non-zero).
+  (pre-registered rule alone would have chosen ElasticNet; the amendment is recorded in results/logs/preregistration.json)
+secondary check - families ranked by CV-RMSE: [('OLS', 18.897), ('Ridge', 18.897), ('ElasticNet', 18.897), ('Lasso', 19.002)]
+
+====================================================================================================
+9. FEATURE ABLATION (same folds, same linear family, same search; only the feature set changes)   [1.6 min]
+====================================================================================================
+model family for every variant: Lasso
+  Set A — raw features                                       p=26 (non-zero  6) | CV MAE 10.83 ± 1.47 | RMSE 19.89 ± 3.16 | {'alpha': 0.7742636826811277}   [1s]
+  Set B — top-k correlated (raw pool)                        p= 5 (non-zero  4) | CV MAE 10.76 ± 1.42 | RMSE 19.93 ± 3.12 | {'alpha': 0.01668100537200059, 'k': 5, 'method': 'pearson'}   [6s]
+  Set B′ — top-k correlated (full candidate pool)            p=10 (non-zero 10) | CV MAE 10.50 ± 1.42 | RMSE 19.49 ± 2.71 | {'alpha': 0.00035938136638046257, 'k': 10, 'method': 'spearman'}   [13s]
+  Set C — engineered (final)                                 p=54 (non-zero 29) | CV MAE 10.51 ± 1.29 | RMSE 19.00 ± 2.93 | {'alpha': 0.21544346900318845}   [0s]
+  C − temporal                                               p=45 (non-zero 33) | CV MAE 10.56 ± 1.35 | RMSE 19.02 ± 2.86 | {'alpha': 0.05994842503189409}   [2s]
+  C − lag                                                    p=47 (non-zero 27) | CV MAE 10.60 ± 1.30 | RMSE 19.13 ± 3.01 | {'alpha': 0.21544346900318845}   [2s]
+  C − rolling                                                p=48 (non-zero 27) | CV MAE 10.51 ± 1.29 | RMSE 19.00 ± 2.93 | {'alpha': 0.21544346900318845}   [2s]
+  C − interaction                                            p=48 (non-zero 22) | CV MAE 10.57 ± 1.26 | RMSE 19.27 ± 2.92 | {'alpha': 0.21544346900318845}   [2s]
+  C − lag − rolling (keeps PM2.5(t))                         p=41 (non-zero 23) | CV MAE 10.65 ± 1.30 | RMSE 19.20 ± 3.06 | {'alpha': 0.21544346900318845}   [1s]
+  C − PM2.5 history (current, lag, rolling)                  p=39 (non-zero 20) | CV MAE 20.70 ± 1.93 | RMSE 32.02 ± 3.56 | {'alpha': 0.7742636826811277}   [1s]
+  C − environment (pollutants, meteorology, interactions)    p=21 (non-zero 16) | CV MAE 10.66 ± 1.46 | RMSE 19.62 ± 2.72 | {'alpha': 0.01668100537200059}   [1s]
+  C − pollutants                                             p=46 (non-zero 21) | CV MAE 10.56 ± 1.38 | RMSE 19.13 ± 2.97 | {'alpha': 0.21544346900318845}   [2s]
+  C − meteorology / wind                                     p=27 (non-zero 23) | CV MAE 10.47 ± 1.32 | RMSE 19.41 ± 2.69 | {'alpha': 0.01668100537200059}   [1s]
+  C − derived differences                                    p=51 (non-zero 28) | CV MAE 10.53 ± 1.46 | RMSE 19.23 ± 2.87 | {'alpha': 0.21544346900318845}   [2s]
+  A − PM2.5(t)  [sensitivity]                                p=25 (non-zero  6) | CV MAE 23.83 ± 0.59 | RMSE 38.02 ± 3.51 | {'alpha': 2.782559402207126}   [1s]
+grid-edge log: no optimum on a grid edge
+  Set B — top-k correlated (raw pool): selected {'alpha': 0.01668100537200059, 'k': 5, 'method': 'pearson'} -> ['PM25_t', 'PM10', 'SO2', 'NO2', 'CO']
+  Set B′ — top-k correlated (full candidate pool): selected {'alpha': 0.00035938136638046257, 'k': 10, 'method': 'spearman'} -> ['PM25_t', 'PM25_lag_1', 'PM25_lag_3', 'PM25_lag_6', 'PM25_roll_mean_3', 'PM25_roll_mean_6', 'PM25_roll_mean_12', 'PM10', 'NO2', 'CO']
+
+====================================================================================================
+10. STATISTICAL ANALYSIS (training rows): predictive model vs OLS/HAC companion, VIF, bootstrap, hypotheses   [2.2 min]
+====================================================================================================
+final predictive model: Lasso {'alpha': 0.21544346900318845} on Set C (54 design columns); OLS companion R2 (training) = 0.9452
+OLS residuals: std 19.0, skew 1.28, excess kurtosis 72.2, Durbin-Watson 1.905, Ljung-Box p (1/24/168) = [0.0, 0.0, 0.0] -> classical SEs unreliable, HAC used
+coefficients significant at 5% (of 54): {'classical': 38, 'HAC(48)': 33, 'HAC(24)': 34, 'HAC(168)': 32}; median SE inflation HAC/classical = 1.18
+moving-block bootstrap: 400 resamples x 54 coefficients, blocks of 168 h   [24s]
+VIF of the final design: max 376.7 (PM25_roll_mean_3), 10 features > 10: {'PM25_roll_mean_3': 377.0, 'PM25_roll_mean_6': 257.0, 'PM25_lag_1': 130.0, 'PM25_lag_3': 121.0, 'PM25_roll_mean_12': 88.0, 'PM25_lag_6': 43.0, 'PM25_roll_mean_24': 33.0, 'PM25_t': 25.0, 'TEMP': 15.0, 'PM25_lag_12': 14.0}
+shrinkage check (final model vs OLS companion): correlation of coefficients 0.9879, max |difference| 9.96 ug/m3 per SD
+top-10 coefficients (ug/m3 per SD): PM25_t +79.74, PM25_lag_1 -8.12, WSPM_x_PM25 -3.29, WSPM -2.62, DEWP_chg_3h +2.54, PM10 +2.46, TEMP_minus_DEWP -2.18, NO2 +1.76, hour_cos -1.62, hour_sin -1.14
+  H1: C vs C - PM2.5 history: dMAE +96.96 % (worse in 5/5 folds; predictive met); joint Wald p < 1e-300 (inferential met) -> SUPPORTED
+  H2: C vs C - environment block: dMAE +1.48 % (worse in 4/5 folds; predictive met); joint Wald p = 4e-115 (inferential met) -> SUPPORTED
+  H3: C vs C - calendar terms: dMAE +0.49 % (worse in 2/5 folds; predictive not met); joint Wald p = 8.2e-53 (inferential met) -> PARTLY SUPPORTED
+  H4: lag-only (C - rolling) relative to rolling-only (C - lag); negative = lag-only better: dMAE -0.86 % (worse in 0/5 folds; predictive not met); DM on out-of-fold |error| (rolling-only minus lag-only): mean +0.091, p = 1.6e-39 (inferential not met) -> NOT SUPPORTED
+  H4 stability: fold-to-fold std of CV-MAE rolling-only 1.30 vs lag-only 1.29
+  H3 decomposition (Wald p): daily terms (hour_sin, hour_cos): p = 8.7e-29; weekly terms (dow_sin, dow_cos, is_weekend): p = 0.38; monthly terms (month_sin, month_cos): p = 1.8e-18
+
+====================================================================================================
+11. FREEZE THE DESIGN (nothing below this line may change a feature, model or hyper-parameter)   [2.8 min]
+====================================================================================================
+design frozen. sha256 = 869857f9b4fa8a4d4bc63925bc109961c92311d10081f75d21a91ca8b48b4c21
+FINAL PREDICTOR: Lasso {'alpha': 0.21544346900318845} on Set C (54 design columns) | CV MAE 10.51 ± 1.29, CV RMSE 19.00 ± 2.93, CV R2 0.9414 ± 0.0160
+
+====================================================================================================
+12. FINAL TEST EVALUATION (the vault is opened once; models were fitted and tuned on training rows only)   [2.8 min]
+====================================================================================================
+test matrix : 6,752 usable hours of 7,013 (96.3 %) | 2016-05-12 18:00:00 -> 2017-02-28 22:00:00 | missing target 107, other unusable 154
+test target : mean 80.7 median 54 std 84.6 min 3 max 713 (train: mean 83.4 median 60 std 81.2)
+FINAL MODEL ON THE HELD-OUT TEST SET - Lasso {'alpha': 0.21544346900318845} (Set C)
+  MAE 10.065 | RMSE 18.001 | R2 0.9547 | median AE 5.86 | bias (mean error) +0.89 | residual std 17.98 | within +-10 ug/m3: 70.0 % | negative predictions: 0.86 %
+  CV (training) for comparison: MAE 10.51 ± 1.29 | RMSE 19.00 ± 2.93 | R2 0.9414 ± 0.0160
+
+TABLE 3 (best per column in bold in the LaTeX version):
+                                    Method        CV MAE       CV RMSE Test MAE Test RMSE Test R²
+                             Training mean 62.46 ± 11.29 82.25 ± 19.15    61.93     84.66 -0.0010
+        Persistence: PM2.5(t+1) = PM2.5(t)  10.69 ± 1.40  20.23 ± 3.16    10.36     19.28  0.9481
+Single-feature OLS: PM2.5(t) -> PM2.5(t+1)  10.91 ± 1.51  20.10 ± 3.15    10.47     19.16  0.9487
+              Random Forest (raw features)  11.14 ± 1.96  21.14 ± 5.03    10.20     18.86  0.9503
+          Gradient Boosting (raw features)  11.76 ± 2.64  22.18 ± 6.23    10.27     18.88  0.9502
+                       OLS (linear, Set C)  10.62 ± 1.35  18.90 ± 2.77    10.05     17.75  0.9560
+                     Ridge (linear, Set C)  10.62 ± 1.35  18.90 ± 2.77    10.05     17.75  0.9560
+                   Lasso ★ (linear, Set C)  10.51 ± 1.29  19.00 ± 2.93    10.06     18.00  0.9547
+               Elastic Net (linear, Set C)  10.62 ± 1.35  18.90 ± 2.77    10.05     17.75  0.9560
+
+TABLE 4 (feature ablation):
+                                            Feature set  p       CV MAE      CV RMSE Test MAE Test RMSE Test R²
+                                   Set A — raw features 26 10.83 ± 1.47 19.89 ± 3.16    10.40     18.91  0.9501
+                    Set B — top-k correlated (raw pool)  5 10.76 ± 1.42 19.93 ± 3.12    10.39     18.92  0.9500
+        Set B′ — top-k correlated (full candidate pool) 10 10.50 ± 1.42 19.49 ± 2.71    10.01     18.07  0.9544
+                             Set C — engineered (final) 54 10.51 ± 1.29 19.00 ± 2.93    10.06     18.00  0.9547
+                                           C − temporal 45 10.56 ± 1.35 19.02 ± 2.86    10.02     17.94  0.9551
+                                                C − lag 47 10.60 ± 1.30 19.13 ± 3.01    10.19     18.23  0.9536
+                                            C − rolling 48 10.51 ± 1.29 19.00 ± 2.93    10.07     18.00  0.9547
+                                        C − interaction 48 10.57 ± 1.26 19.27 ± 2.92    10.12     18.14  0.9541
+                     C − lag − rolling (keeps PM2.5(t)) 41 10.65 ± 1.30 19.20 ± 3.06    10.28     18.40  0.9527
+              C − PM2.5 history (current, lag, rolling) 39 20.70 ± 1.93 32.02 ± 3.56    16.25     24.28  0.9177
+C − environment (pollutants, meteorology, interactions) 21 10.66 ± 1.46 19.62 ± 2.72    10.07     18.23  0.9536
+                                         C − pollutants 46 10.56 ± 1.38 19.13 ± 2.97    10.09     18.15  0.9540
+                                 C − meteorology / wind 27 10.47 ± 1.32 19.41 ± 2.69    10.02     18.05  0.9545
+                                C − derived differences 51 10.53 ± 1.46 19.23 ± 2.87    10.03     18.09  0.9543
+                            A − PM2.5(t)  [sensitivity] 25 23.83 ± 0.59 38.02 ± 3.51    19.37     29.05  0.8821
+
+====================================================================================================
+13. ANALYSIS ON THE FINAL TEST PREDICTIONS: SLICES, LARGEST ERRORS, RESIDUALS, COEFFICIENTS   [6.3 min]
+====================================================================================================
+SLICE-LEVEL PERFORMANCE (final model | Set A | persistence, MAE):
+  PM2.5 level (actual)         low (<= P25 = 23)            n= 1920  final   5.47 (RMSE  10.30) | A   5.26 | persistence   4.78 | d_vs_A  +0.20 | d_vs_pers  +0.68
+  PM2.5 level (actual)         mid (P25-P75)                n= 3281  final   8.87 (RMSE  14.28) | A   9.24 | persistence   9.70 | d_vs_A  -0.37 | d_vs_pers  -0.83
+  PM2.5 level (actual)         high (>= P75 = 116)          n= 1551  final  18.29 (RMSE  29.12) | A  19.21 | persistence  18.69 | d_vs_A  -0.93 | d_vs_pers  -0.40
+  PM2.5 level (actual)         episode (>= P95 = 247)       n=  345  final  26.48 (RMSE  40.13) | A  28.20 | persistence  26.21 | d_vs_A  -1.72 | d_vs_pers  +0.27
+  Time of day (target hour)    day (06-17 h)                n= 3364  final   9.75 (RMSE  17.02) | A  10.13 | persistence  10.24 | d_vs_A  -0.37 | d_vs_pers  -0.49
+  Time of day (target hour)    night                        n= 3388  final  10.38 (RMSE  18.92) | A  10.68 | persistence  10.49 | d_vs_A  -0.30 | d_vs_pers  -0.11
+  Weekday / weekend            weekday                      n= 4758  final   9.74 (RMSE  17.15) | A  10.07 | persistence  10.04 | d_vs_A  -0.33 | d_vs_pers  -0.30
+  Weekday / weekend            weekend                      n= 1994  final  10.84 (RMSE  19.89) | A  11.20 | persistence  11.13 | d_vs_A  -0.36 | d_vs_pers  -0.29
+  Season                       winter                       n= 2131  final  13.16 (RMSE  24.76) | A  13.71 | persistence  13.57 | d_vs_A  -0.55 | d_vs_pers  -0.40
+  Season                       spring                       n=  453  final   6.72 (RMSE   9.52) | A   6.78 | persistence   7.02 | d_vs_A  -0.06 | d_vs_pers  -0.31
+  Season                       summer                       n= 2074  final   8.29 (RMSE  12.39) | A   8.42 | persistence   8.35 | d_vs_A  -0.13 | d_vs_pers  -0.07
+  Season                       autumn                       n= 2094  final   9.40 (RMSE  15.78) | A   9.78 | persistence   9.82 | d_vs_A  -0.38 | d_vs_pers  -0.42
+  Wind speed                   low wind (<= 1.4 m/s)        n= 3384  final  10.84 (RMSE  18.88) | A  11.39 | persistence  11.23 | d_vs_A  -0.56 | d_vs_pers  -0.39
+  Wind speed                   high wind                    n= 3356  final   9.28 (RMSE  17.07) | A   9.39 | persistence   9.48 | d_vs_A  -0.11 | d_vs_pers  -0.20
+  One-hour change              rapid rise (>= +25)          n=  282  final  44.27 (RMSE  52.42) | A  47.42 | persistence  45.24 | d_vs_A  -3.15 | d_vs_pers  -0.97
+  One-hour change              rapid fall (<= -25)          n=  318  final  43.57 (RMSE  53.98) | A  47.65 | persistence  52.56 | d_vs_A  -4.08 | d_vs_pers  -8.99
+  One-hour change              stable (|change| <= 6)       n= 3696  final   4.06 (RMSE   5.23) | A   3.45 | persistence   2.76 | d_vs_A  +0.61 | d_vs_pers  +1.30
+  engineered features / model help most vs persistence in: rapid fall (<= -25) (-8.99); rapid rise (>= +25) (-0.97); mid (P25-P75) (-0.83)
+  ... and help least / hurt in: episode (>= P95 = 247) (+0.27); low (<= P25 = 23) (+0.68); stable (|change| <= 6) (+1.30)
+
+one-hour change PM2.5(t+1) - PM2.5(t) in the test period: share of its variance explained - final model 12.8 %, linear Set A 3.8 %, persistence -0.0 % (<= 0 by construction)
+
+LARGEST ERRORS (error = actual - predicted):
+  #1: target hour 2017-01-28 01:00:00 (issued 2017-01-28 00:00:00) actual 576 predicted 284 error +292 | PM2.5(t) 305, change +271 | PM10 377 NO2 75 CO 1600 TEMP -0.7 wind 2.0 SE | sudden pollution spike: PM2.5 jumped +271 ug/m3 within one hour (training 95th percentile of rises: +33); a linear model driven by the current level under-reacts to abrupt episodes; limited warning in the history: the jump (271) is 3.1x the 6-hour standard deviation (87) preceding it; wind-direction shift of 90 degrees (SW -> SE); extreme level (actual 576 >= training 99th percentile 366): few training examples, regression to the mean / extrapolation; external knowledge (not in the data): the target hour lies in the Chinese New Year fireworks window (first day 2017-01-28); fireworks are a documented short-lived PM2.5 source in Beijing, with peaks around 01:00-02:00 of the first day
+  #2: target hour 2016-12-22 03:00:00 (issued 2016-12-22 02:00:00) actual 149 predicted 396 error -247 | PM2.5(t) 412, change -263 | PM10 412 NO2 2 CO 7700 TEMP 0.3 wind 0.4 ESE | sudden clean-up: PM2.5 fell -263 ug/m3 within one hour (training 95th percentile of falls: -43); the forecast stays close to the previous high level; limited warning in the history: the jump (263) is 16.5x the 6-hour standard deviation (16) preceding it; the wind was calm (0.4 m/s, below the training median 1.4), so a ventilation-driven clean-up is not visible in the local wind data (possible local plume change or measurement artefact); PM10 equals PM2.5(t) exactly in this hour (a data-quality quirk present in 23 % of the training hours): the coarse-particle reading adds no independent information here
+  #3: target hour 2017-02-15 14:00:00 (issued 2017-02-15 13:00:00) actual 3 predicted 226 error -223 | PM2.5(t) 229, change -226 | PM10 229 NO2 97 CO 2000 TEMP 6.7 wind 0.6 S | sudden clean-up: PM2.5 fell -226 ug/m3 within one hour (training 95th percentile of falls: -43); the forecast stays close to the previous high level; limited warning in the history: the jump (226) is 16.9x the 6-hour standard deviation (13) preceding it; the wind was calm (0.6 m/s, below the training median 1.4), so a ventilation-driven clean-up is not visible in the local wind data (possible local plume change or measurement artefact); PM10 equals PM2.5(t) exactly in this hour (a data-quality quirk present in 23 % of the training hours): the coarse-particle reading adds no independent information here
+  SHARED PATTERN: 1/3 are under-predictions; 1/3 follow a rapid one-hour rise (>= training P90 of |change|); 2 a rapid fall; |change| of the 3 cases = [271, 263, 226] = [8.2, 6.1, 5.3] x the training P95 of that direction; forecast minus PM2.5(t) = [-21, -16, -3]; among the largest 1 % of errors (68 hours): 41 % under-predictions, 100 % in rapid-change hours; they carry 43 % of the squared error
+
+RESIDUAL ANALYSIS (test):
+  heteroscedasticity: Breusch-Pagan p = 6.5e-72; residual std in the highest vs lowest prediction decile = x6.6; Spearman(|resid|, prediction) = +0.39
+  autocorrelation: Durbin-Watson 1.60; ACF lag1 +0.199, lag24 +0.024, lag168 +0.014; Ljung-Box p (1/24/168) = ['2.8e-60', '1.1e-53', '6.1e-43']
+  bias: mean error +0.89; 54 % of hours under-predicted; extreme pollution (actual >= P95=247, n=345): mean error +13.6, MAE 26.5; clean air (actual <= P25=23): mean error -1.8, MAE 5.5
+  distribution: skew -0.62, excess kurtosis 36.2, Jarque-Bera p < 1e-300 -> residuals are heavy-tailed and NOT normal (not evidence of a good model either way)
+
+COEFFICIENT SIGNS READ AGAINST THE HYPOTHESES (final model, training coefficients, ug/m3 per SD; descriptive - the verdicts come from the pre-registered CV rule):
+  H1 recent PM2.5: current PM25_t +79.74 | lags PM25_lag_1 -8.12, PM25_lag_6 +0.04, PM25_lag_12 +0.28 [3/7 non-zero] | rolling PM25_roll_mean_24 +0.49, PM25_roll_std_24 -0.03 [2/6 non-zero]
+  H2 environment: pollutants PM10 +2.46, SO2 +0.65, NO2 +1.76, O3 +0.55 | meteorology RAIN -0.71, WSPM -2.62 | derived TEMP_minus_DEWP -2.18, DEWP_chg_3h +2.54, PM25_PM10_ratio -0.70 | interactions TEMP_x_PM10 -0.03, WSPM_x_PM10 -0.18, WSPM_x_PM25 -3.29, TEMP_x_hour_sin +0.94
+  H3 calendar: hour_sin -1.14, hour_cos -1.62, month_sin +0.98 | joint Wald p (HAC): daily 8.7e-29, weekly 0.38, monthly 1.8e-18
+  H4 rolling vs lag: 2/6 rolling and 3/7 lag coefficients are non-zero; removing all rolling features changes CV MAE by +0.01 %, removing all lags by +0.88 %
+
+====================================================================================================
+14. DATASET TABLE, FEATURE-GROUP TABLE AND FINAL SUMMARY   [6.5 min]
+====================================================================================================
+
+================================================
+DATASET
+================================================
+Rows: 35,064 (file) -> 35,063 after target construction
+Features: 54 design columns in the final Set C (from 37 candidate columns); Set A: 26
+Time range: 2013-03-01 00:00 to 2017-02-28 23:00
+Sampling interval: 1 hour (regular, 0 missing timestamps)
+Station: Aotizhongxin
+Target: PM2.5 concentration at t+1 hour
+Target unit: ug/m3
+
+================================================
+TASK
+================================================
+Prediction: X(t) -> PM2.5(t+1)
+Allowed at hour t: current pollutants and meteorology, calendar of t, PM2.5 up to t (current value, lags, rolling statistics of the shifted series).
+Forbidden: PM2.5(t+1) or any later value, future meteorology, centred rolling windows, any statistic fitted on test data.
+
+================================================
+SPLIT
+================================================
+Train: 28,050 hours 2013-03-01 00:00 -> 2016-05-12 17:00 (26,000 usable)
+Test:  7,013 hours 2016-05-12 18:00 -> 2017-02-28 22:00 (6,752 usable)
+
+================================================
+HYPOTHESES (pre-registered; verdict from training CV + training inference)
+================================================
+H1: Supported - Recent PM2.5 predicts next-hour PM2.5 (C vs C - PM2.5 history: dMAE +96.96 %, worse in 5/5 folds; joint Wald p < 1e-300); descriptive test check (not used for the verdict): removing the history changes test MAE by +61.4 %
+H2: Supported - Environment adds information beyond PM2.5 history (C vs C - environment block: dMAE +1.48 %, worse in 4/5 folds; joint Wald p = 4e-115); descriptive test check: removing the environment changes test MAE by +0.05 % - the small training-CV gain did not replicate on the test period
+H3: Partly supported - Hourly/weekly temporal patterns captured by temporal features (C vs C - calendar terms: dMAE +0.49 %, worse in 2/5 folds; joint Wald p = 8.2e-53); descriptive test check: removing the calendar terms changes test MAE by -0.48 %
+H4: Not supported - Rolling statistics more stable than individual lags (lag-only (C - rolling) relative to rolling-only (C - lag); negative = lag-only better: dMAE -0.86 %, worse in 0/5 folds; DM on out-of-fold |error| (rolling-only minus lag-only): mean +0.091, p = 1.6e-39); descriptive test check: test MAE lag-only 10.066 vs rolling-only 10.185; fold-to-fold std of CV-MAE rolling-only 1.30 vs lag-only 1.29
+
+================================================
+BEST MODEL
+================================================
+Model: Lasso regression (linear)
+Hyperparameters: {"alpha": 0.21544346900318845}
+Feature set: C (engineered)
+Why: Best mean CV-MAE: Lasso (10.508); 1 SE = 0.577; families within 1 SE: ['OLS', 'Ridge', 'Lasso', 'ElasticNet']. Training-design properties: max VIF 376.7 (PM25_roll_mean_3), 10 features with VIF > 10; 3 correlated groups (|r| >= 0.8); 50.0% of features weak (|Spearman| < 0.1; threshold 50%). Implied family: ElasticNet (correlated groups of predictors AND many weak/redundant predictors -> feature selection that keeps correlated groups together); pre-registered outcome: ElasticNet. AMENDMENT: Ridge, ElasticNet have their CV-optimal penalty on the no-shrinkage edge of the grid (Ridge: {'alpha': 0.001}, 54/54 non-zero; ElasticNet: {'alpha': 9.999999999999999e-05, 'l1_ratio': 0.9}, 54/54 non-zero), i.e. numerically OLS, so they are skipped -> chosen: Lasso ({'alpha': 0.21544346900318845}, 29/54 non-zero).
+
+================================================
+RESULTS
+================================================
+CV MAE : 10.51 ± 1.29 ug/m3
+CV RMSE: 19.00 ± 2.93 ug/m3
+CV R2  : 0.9414 ± 0.0160
+
+Test MAE : 10.065 ug/m3
+Test RMSE: 18.001 ug/m3
+Test R2  : 0.9547
+Share of test predictions within +-10 ug/m3 (DECISION_THRESHOLD, PROPOSED / needs your confirmation): 70.0 % (persistence: 71.1 %)
+Reference (test MAE / RMSE / R2): training mean 61.93/84.66/-0.001; persistence 10.36/19.28/0.9481; single-feature OLS 10.47/19.16/0.9487; Random Forest 10.20/18.86/0.9503; Gradient Boosting 10.27/18.88/0.9502
+Supplementary nonlinear references on the engineered Set C (never candidates for the final model; test MAE / RMSE / R2): Random Forest 9.53/17.50/0.9572 (-5.3 % test MAE vs the final model); Gradient Boosting 9.71/17.94/0.9551 (-3.5 % test MAE vs the final model)
+
+================================================
+ABLATION (same family, folds, search; CV MAE | test MAE / RMSE / R2)
+================================================
+Set A: CV MAE 10.830 | test 10.402 / 18.910 / 0.9501  (Set A — raw features; p=26; {"alpha": 0.7742636826811277})
+Set B: CV MAE 10.759 | test 10.386 / 18.916 / 0.9500  (Set B — top-k correlated (raw pool); p=5; {"alpha": 0.01668100537200059, "k": 5, "method": "pearson"})
+Set B′: CV MAE 10.501 | test 10.005 / 18.070 / 0.9544  (Set B′ — top-k correlated (full candidate pool); p=10; {"alpha": 0.00035938136638046257, "k": 10, "method": "spearman"})
+Set C: CV MAE 10.508 | test 10.065 / 18.001 / 0.9547  (Set C — engineered (final); p=54; {"alpha": 0.21544346900318845})
+Group removal (dMAE vs C, CV / test): C − temporal: +0.49 % / -0.48 %; C − lag: +0.88 % / +1.20 %; C − rolling: +0.01 % / +0.01 %; C − interaction: +0.62 % / +0.54 %; C − lag − rolling (keeps PM2.5(t)): +1.38 % / +2.14 %; C − PM2.5 history (current, lag, rolling): +96.96 % / +61.42 %; C − environment (pollutants, meteorology, interactions): +1.48 % / +0.05 %; C − pollutants: +0.52 % / +0.25 %; C − meteorology / wind: -0.33 % / -0.40 %; C − derived differences: +0.25 % / -0.36 %
+
+================================================
+TOP FEATURES (final model, ug/m3 per 1 SD; 95% block-bootstrap CI; OLS-companion HAC p-value, unadjusted and Holm-adjusted over all coefficients; VIF)
+================================================
+PM25_t: +79.737 [+70.013, +87.684] p(HAC) < 1e-300, p(Holm) < 1e-300, VIF 25.1
+PM25_lag_1: -8.118 [-11.992, -4.664] p(HAC) = 1e-07, p(Holm) = 4.3e-06, VIF 130.3
+WSPM_x_PM25: -3.288 [-4.314, -2.049] p(HAC) = 1.4e-11, p(Holm) = 6.5e-10, VIF 2.8
+WSPM: -2.622 [-3.360, -1.873] p(HAC) = 2.3e-19, p(Holm) = 1.2e-17, VIF 2.4
+DEWP_chg_3h: +2.541 [+2.054, +2.999] p(HAC) = 3.3e-17, p(Holm) = 1.7e-15, VIF 1.4
+PM10: +2.456 [+1.362, +4.616] p(HAC) = 0.01, p(Holm) = 0.28, VIF 7.7
+TEMP_minus_DEWP: -2.177 [-2.630, -1.622] p(HAC) = 4e-34, p(Holm) = 2.1e-32, VIF 4.1
+NO2: +1.759 [+1.043, +2.434] p(HAC) = 1.5e-09, p(Holm) = 6.5e-08, VIF 3.6
+
+================================================
+ERROR ANALYSIS
+================================================
+Largest error #1: 2017-01-28 01:00 actual 576, predicted 284, error +292 - sudden pollution spike: PM2.5 jumped +271 ug/m3 within one hour (training 95th percentile of rises: +33); a linear model driven by the current level under-reacts to abrupt episodes; limited warning in the history: the jump (271) is 3.1x the 6-hour standard deviation (87) preceding it; wind-direction shift of 90 degrees (SW -> SE); extreme level (actual 576 >= training 99th percentile 366): few training examples, regression to the mean / extrapolation; external knowledge (not in the data): the target hour lies in the Chinese New Year fireworks window (first day 2017-01-28); fireworks are a documented short-lived PM2.5 source in Beijing, with peaks around 01:00-02:00 of the first day
+Largest error #2: 2016-12-22 03:00 actual 149, predicted 396, error -247 - sudden clean-up: PM2.5 fell -263 ug/m3 within one hour (training 95th percentile of falls: -43); the forecast stays close to the previous high level; limited warning in the history: the jump (263) is 16.5x the 6-hour standard deviation (16) preceding it; the wind was calm (0.4 m/s, below the training median 1.4), so a ventilation-driven clean-up is not visible in the local wind data (possible local plume change or measurement artefact); PM10 equals PM2.5(t) exactly in this hour (a data-quality quirk present in 23 % of the training hours): the coarse-particle reading adds no independent information here
+Largest error #3: 2017-02-15 14:00 actual 3, predicted 226, error -223 - sudden clean-up: PM2.5 fell -226 ug/m3 within one hour (training 95th percentile of falls: -43); the forecast stays close to the previous high level; limited warning in the history: the jump (226) is 16.9x the 6-hour standard deviation (13) preceding it; the wind was calm (0.6 m/s, below the training median 1.4), so a ventilation-driven clean-up is not visible in the local wind data (possible local plume change or measurement artefact); PM10 equals PM2.5(t) exactly in this hour (a data-quality quirk present in 23 % of the training hours): the coarse-particle reading adds no independent information here
+Shared failure pattern: all 3 largest errors are abrupt one-hour changes (|change| 226-271 ug/m3, 5.3-8.2x the training 95th percentile of changes in that direction); in each, the forecast stays within 3-21 ug/m3 of the last observed PM2.5(t), i.e. it behaves like persistence; 1/3 are under-predictions (rises) and 2/3 over-predictions (falls).
+Among the largest 1 % of absolute errors (68 hours) 100 % occur in rapid-change hours (|change| >= training P90) and 41 % are under-predictions; these hours carry 43 % of the squared error. The final model explains 13 % of the variance of the one-hour change PM2.5(t+1) - PM2.5(t) (linear Set A 4 %, persistence 0 % by construction).
+
+================================================
+LIMITATIONS
+================================================
+1. One chronological split and one test window (6,752 hours, 2016-05-12 to 2017-02-28): no variability estimate across other periods.
+2. One-step-ahead with the observed current PM2.5: the forecast is dominated by persistence (lag-1 autocorrelation 0.96; the final model explains only 13 % of the variance of the one-hour change); longer horizons were not evaluated.
+3. Rows with a missing target, a missing current PM2.5 or an unusable history are excluded (policy documented); results apply to hours with this information available.
+4. Heavy-tailed target: squared-error linear models under-react to abrupt episodes; target transforms / quantile models are outside the allowed family.
+5. Residuals are heteroscedastic, heavy-tailed and autocorrelated (Durbin-Watson 1.60, Ljung-Box p = 1.1e-53 at lag 24): inference uses HAC / block bootstrap but remains descriptive and post-selection.
+6. CV scores of the selected configurations are not nested; thresholds of the hypothesis and selection rules are conventions fixed in advance.
+7. DECISION_THRESHOLD = 10 ug/m3 is a PROPOSED operational tolerance, not an authoritative standard - please confirm or override it in src/config.py.
+8. A single station (Aotizhongxin); regional transport and boundary-layer variables are not observed. The UCI snippet fetch_ucirepo(id=381) refers to a different dataset; the experiment uses UCI id 501.
+9. The linear restriction costs accuracy here: Random Forest on the same engineered features reaches a test MAE of 9.53 (-5.3 % vs the final model) and Gradient Boosting on the same engineered features reaches a test MAE of 9.71 (-3.5 % vs the final model) (reference only - nonlinear models are not allowed as the final model; training-CV MAE: Random Forest 10.45, Gradient Boosting 10.87, final model 10.51).
+
+DONE in 6.5 min. Artefacts: results

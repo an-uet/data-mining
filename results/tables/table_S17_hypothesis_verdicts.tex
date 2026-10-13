@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Hypotheses H1-H4: pre-registered verdicts from training CV and training inference; the last column repeats the same comparison on the test period for information only (never used for a verdict).}
+\label{tab:table_S17_hypothesis_verdicts}
+\begin{tabular}{lrrrrrrrr}
+\toprule
+hypothesis & comparison & delta\_cv\_mae\_pct & folds\_worse & predictive & inferential\_test & inferential & verdict & test\_delta\_mae\_pct (descriptive, not used for the verdict) \\
+\midrule
+H1 & C vs C - PM2.5 history & 96.96 & 5 & 1 & joint Wald p $<$ 1e-300 & 1 & Supported & 61.42 \\
+H2 & C vs C - environment block & 1.48 & 4 & 1 & joint Wald p = 4e-115 & 1 & Supported & 0.05 \\
+H3 & C vs C - calendar terms & 0.49 & 2 & 0 & joint Wald p = 8.2e-53 & 1 & Partly supported & -0.48 \\
+H4 & lag-only (C - rolling) relative to rolling-only (C - lag); negative = lag-only better & -0.86 & 0 & 0 & DM on out-of-fold \textbar{}error\textbar{} (rolling-only minus lag-only): mean +0.091, p = 1.6e-39 & 0 & Not supported & -1.17 \\
+\bottomrule
+\end{tabular}
+\end{table}

@@ -1,0 +1,21 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Baselines and linear models: 5-fold time-series CV on the training rows (mean $\pm$ std over folds) and a single evaluation on the held-out test period ($\mu$g/m$^3$). $\star$ = selected final model. Bold = best value in the column over all rows.}
+\label{tab:table_3_model_comparison}
+\begin{tabular}{lrrrrr}
+\toprule
+Method & CV MAE & CV RMSE & Test MAE & Test RMSE & Test R$^2$ \\
+\midrule
+Training mean & 62.46 $\pm$ 11.29 & 82.25 $\pm$ 19.15 & 61.93 & 84.66 & -0.0010 \\
+Persistence: PM2.5(t+1) = PM2.5(t) & 10.69 $\pm$ 1.40 & 20.23 $\pm$ 3.16 & 10.36 & 19.28 & 0.9481 \\
+Single-feature OLS: PM2.5(t) $\rightarrow$ PM2.5(t+1) & 10.91 $\pm$ 1.51 & 20.10 $\pm$ 3.15 & 10.47 & 19.16 & 0.9487 \\
+Random Forest (raw features) & 11.14 $\pm$ 1.96 & 21.14 $\pm$ 5.03 & 10.20 & 18.86 & 0.9503 \\
+Gradient Boosting (raw features) & 11.76 $\pm$ 2.64 & 22.18 $\pm$ 6.23 & 10.27 & 18.88 & 0.9502 \\
+OLS (linear, Set C) & 10.62 $\pm$ 1.35 & \textbf{18.90 $\pm$ 2.77} & \textbf{10.05} & \textbf{17.75} & \textbf{0.9560} \\
+Ridge (linear, Set C) & 10.62 $\pm$ 1.35 & \textbf{18.90 $\pm$ 2.77} & \textbf{10.05} & \textbf{17.75} & \textbf{0.9560} \\
+Lasso $\star$ (linear, Set C) & \textbf{10.51 $\pm$ 1.29} & 19.00 $\pm$ 2.93 & 10.06 & 18.00 & 0.9547 \\
+Elastic Net (linear, Set C) & 10.62 $\pm$ 1.35 & \textbf{18.90 $\pm$ 2.77} & \textbf{10.05} & \textbf{17.75} & \textbf{0.9560} \\
+\bottomrule
+\end{tabular}
+\end{table}

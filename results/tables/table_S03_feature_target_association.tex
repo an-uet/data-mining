@@ -1,0 +1,69 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Pearson and Spearman correlation of every candidate feature with the next-hour PM2.5 (training rows only).}
+\label{tab:table_S03_feature_target_association}
+\begin{tabular}{lrrrr}
+\toprule
+feature & set & group & pearson & spearman \\
+\midrule
+PM25\_t & raw & current PM2.5 & 0.968 & 0.966 \\
+PM25\_lag\_1 & engineered & lag & 0.920 & 0.923 \\
+PM25\_roll\_mean\_3 & engineered & rolling & 0.889 & 0.890 \\
+PM10 & raw & pollutants & 0.841 & 0.869 \\
+PM25\_roll\_mean\_6 & engineered & rolling & 0.848 & 0.842 \\
+PM25\_lag\_3 & engineered & lag & 0.830 & 0.837 \\
+CO & raw & pollutants & 0.715 & 0.786 \\
+PM25\_roll\_mean\_12 & engineered & rolling & 0.782 & 0.757 \\
+PM25\_lag\_6 & engineered & lag & 0.718 & 0.725 \\
+NO2 & raw & pollutants & 0.668 & 0.687 \\
+PM25\_roll\_mean\_24 & engineered & rolling & 0.687 & 0.627 \\
+PM25\_lag\_12 & engineered & lag & 0.558 & 0.551 \\
+PM25\_roll\_std\_6 & engineered & rolling & 0.319 & 0.506 \\
+SO2 & raw & pollutants & 0.487 & 0.497 \\
+TEMP\_minus\_DEWP & engineered & derived differences & -0.406 & -0.471 \\
+PM25\_roll\_std\_24 & engineered & rolling & 0.290 & 0.352 \\
+WSPM & raw & meteorology / wind & -0.283 & -0.337 \\
+PM25\_lag\_24 & engineered & lag & 0.361 & 0.337 \\
+PM25\_PM10\_ratio & engineered & derived differences & 0.197 & 0.322 \\
+DEWP & raw & meteorology / wind & 0.155 & 0.273 \\
+O3 & raw & pollutants & -0.156 & -0.262 \\
+wd\_NW & raw & meteorology / wind & -0.127 & -0.184 \\
+wd\_NNW & raw & meteorology / wind & -0.127 & -0.181 \\
+TEMP\_x\_PM10 & engineered & interaction & -0.360 & -0.147 \\
+DEWP\_chg\_3h & engineered & derived differences & 0.096 & 0.146 \\
+PRES & raw & meteorology / wind & -0.022 & -0.115 \\
+WSPM\_x\_PM25 & engineered & interaction & -0.246 & -0.115 \\
+WSPM\_x\_PM10 & engineered & interaction & -0.173 & -0.107 \\
+wd\_ENE & raw & meteorology / wind & 0.099 & 0.090 \\
+wd\_NNE & raw & meteorology / wind & -0.057 & -0.088 \\
+PM25\_lag\_48 & engineered & lag & 0.110 & 0.085 \\
+wd\_WNW & raw & meteorology / wind & -0.058 & -0.082 \\
+wd\_E & raw & meteorology / wind & 0.084 & 0.081 \\
+wd\_SSW & raw & meteorology / wind & 0.022 & 0.074 \\
+hour\_cos & engineered & temporal & 0.061 & 0.073 \\
+TEMP\_x\_DEWP & engineered & interaction & -0.108 & -0.071 \\
+wd\_ESE & raw & meteorology / wind & 0.062 & 0.068 \\
+wd\_S & raw & meteorology / wind & 0.031 & 0.064 \\
+wd\_SE & raw & meteorology / wind & 0.042 & 0.061 \\
+wd\_SSE & raw & meteorology / wind & 0.029 & 0.057 \\
+wd\_SW & raw & meteorology / wind & -0.002 & 0.055 \\
+PRES\_chg\_3h & engineered & derived differences & -0.039 & -0.052 \\
+TEMP\_x\_hour\_sin & engineered & interaction & 0.058 & 0.047 \\
+month\_sin & engineered & temporal & 0.046 & 0.045 \\
+dow\_sin & engineered & temporal & -0.040 & -0.042 \\
+RAIN & raw & meteorology / wind & -0.019 & -0.037 \\
+wd\_NE & raw & meteorology / wind & 0.057 & 0.036 \\
+dow\_cos & engineered & temporal & -0.025 & -0.035 \\
+is\_weekend & engineered & temporal & 0.026 & 0.026 \\
+PM25\_lag\_168 & engineered & lag & 0.001 & -0.024 \\
+wd\_WSW & raw & meteorology / wind & -0.017 & 0.020 \\
+hour\_sin & engineered & temporal & -0.010 & -0.010 \\
+DEWP\_x\_hour\_sin & engineered & interaction & -0.001 & 0.009 \\
+TEMP\_chg\_3h & engineered & derived differences & -0.006 & -0.007 \\
+wd\_W & raw & meteorology / wind & -0.013 & 0.005 \\
+TEMP & raw & meteorology / wind & -0.099 & 0.004 \\
+month\_cos & engineered & temporal & 0.117 & 0.001 \\
+\bottomrule
+\end{tabular}
+\end{table}

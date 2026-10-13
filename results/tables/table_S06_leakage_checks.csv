@@ -1,0 +1,15 @@
+check,passed
+[synthetic] target = PM2.5(t+1); PM25_t = PM2.5(t); target not among features,True
+"[synthetic] lag_k = PM2.5(t-k); rolling windows = PM2.5(t-1..t-w) (brute-force match, shifted, not centred)",True
+[synthetic] perturbing PM2.5(t>t0) and the label leaves all features of rows <= t0 unchanged (positive control passed),True
+[synthetic] perturbing future meteorology / pollutants leaves rows <= t0 unchanged,True
+[synthetic] features of the first half are identical whether or not the second half exists (prefix invariance),True
+[synthetic] calendar and meteorological features do not use PM2.5,True
+[real training rows] target = PM2.5(t+1); PM25_t = PM2.5(t); target not among features,True
+"[real training rows] lag_k = PM2.5(t-k); rolling windows = PM2.5(t-1..t-w) (brute-force match, shifted, not centred)",True
+[real training rows] perturbing PM2.5(t>t0) and the label leaves all features of rows <= t0 unchanged (positive control passed),True
+[real training rows] perturbing future meteorology / pollutants leaves rows <= t0 unchanged,True
+[real training rows] features of the first half are identical whether or not the second half exists (prefix invariance),True
+[real training rows] calendar and meteorological features do not use PM2.5,True
+"[CV] imputer medians, scaler mean/count and top-k ranking come from the training part of every fold; validation strictly after training",True
+[vault] test rows still locked while designing / tuning,True

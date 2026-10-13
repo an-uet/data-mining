@@ -1,0 +1,16 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Linear families on Set C: tuned hyper-parameters, time-series CV metrics and the outcome of the pre-registered selection rule.}
+\label{tab:table_S07_linear_models_cv_selection}
+\begin{tabular}{llrrrrlc}
+\toprule
+Model & selected hyper-parameters & CV MAE & CV RMSE & CV R$^2$ & non-zero coef. & within 1 SE of best & selected \\
+\midrule
+OLS & - & 10.62 $\pm$ 1.35 & 18.90 $\pm$ 2.77 & 0.9418 $\pm$ 0.0169 & 54/54 & 1 &  \\
+Ridge & \{"alpha": 0.001\} & 10.62 $\pm$ 1.35 & 18.90 $\pm$ 2.77 & 0.9418 $\pm$ 0.0169 & 54/54 & 1 &  \\
+Lasso & \{"alpha": 0.2154\} & 10.51 $\pm$ 1.29 & 19.00 $\pm$ 2.93 & 0.9414 $\pm$ 0.0160 & 29/54 & 1 & $\star$ \\
+ElasticNet & \{"alpha": 0.0001, "l1\_ratio": 0.9\} & 10.62 $\pm$ 1.35 & 18.90 $\pm$ 2.77 & 0.9418 $\pm$ 0.0169 & 54/54 & 1 &  \\
+\bottomrule
+\end{tabular}
+\end{table}

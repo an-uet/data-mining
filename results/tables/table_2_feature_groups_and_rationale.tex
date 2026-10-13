@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Feature groups, members, rationale and the hypothesis each group tests.}
+\label{tab:table_2_feature_groups_and_rationale}
+\begin{tabular}{lrp{4.6cm}p{6.4cm}l}
+\toprule
+group & n\_features & features & rationale & tests \\
+\midrule
+Current PM2.5 & 1 & PM25\_t & The latest observed PM2.5 is the natural anchor of a next-hour forecast (lag-1 autocorrelation 0.96 in training). & H1 \\
+Temporal & 7 & hour\_sin, hour\_cos, dow\_sin, dow\_cos, month\_sin, month\_cos, is\_weekend & PM2.5 shows a daily cycle (night maximum, afternoon minimum), a seasonal cycle (Oct-Dec high, Aug low) and a small weekend effect in the training EDA; cyclical sin/cos encodings avoid artificial jumps at midnight / year end. & H3 \\
+PM2.5 lags & 7 & PM25\_lag\_1, PM25\_lag\_3, PM25\_lag\_6, PM25\_lag\_12, PM25\_lag\_24, PM25\_lag\_48, PM25\_lag\_168 & Concentrations persist over hours (1-6 h), days (24 / 48 h) and weeks (168 h); individual lags capture specific recurrences. & H1, H4 \\
+PM2.5 rolling statistics & 6 & PM25\_roll\_mean\_3, PM25\_roll\_mean\_6, PM25\_roll\_mean\_12, PM25\_roll\_mean\_24, PM25\_roll\_std\_6, PM25\_roll\_std\_24 & Means and standard deviations of the shifted series (window ends at t-1) summarise recent level and volatility and average out single noisy readings. & H4 \\
+Pollutants (raw) & 5 & PM10, SO2, NO2, CO, O3 & Co-pollutants share sources and meteorology with PM2.5 (PM10 and CO are strongly correlated with the target in the training EDA). & H2 \\
+Meteorology (raw) & 5 & TEMP, PRES, RAIN, WSPM, wd (15 one-hot dummies, reference N) & Wind speed/direction ventilate the air; precipitation scavenges particles; pressure and temperature mark stagnation. Wind direction is one-hot encoded (no artificial ordering); DEWP enters through TEMP-DEWP. & H2 \\
+Derived differences & 3 & TEMP\_minus\_DEWP, DEWP\_chg\_3h, PM25\_PM10\_ratio & Physically motivated quantities that passed the training-only EDA rule (\textbar{}Spearman\textbar{} $\geq$ 0.10 with the target or the next-hour change): moisture and aerosol-composition indicators. & H2 \\
+Interactions (centred products) & 6 & TEMP\_x\_DEWP, TEMP\_x\_PM10, WSPM\_x\_PM10, WSPM\_x\_PM25, TEMP\_x\_hour\_sin, DEWP\_x\_hour\_sin & Context-dependent effects: ventilation x load, temperature x moisture, seasonal composition, diurnal modulation. Inputs are mean-centred inside each training fold to limit artificial collinearity. & H2 (context) \\
+\bottomrule
+\end{tabular}
+\end{table}

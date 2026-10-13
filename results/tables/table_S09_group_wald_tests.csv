@@ -1,0 +1,9 @@
+coefficient group,df,Wald chi2,p-value (HAC)
+PM2.5 history (current + lags + rolling),14,8100.271125002222,0.0
+"environment (pollutants, meteorology, wind, derived, interactions)",33,647.5473313537295,3.996637161575739e-115
+temporal (calendar terms + hour interactions),9,269.3270319546561,8.212182137783262e-53
+interactions,6,171.90534919763837,1.7734585736257431e-34
+"  daily terms (hour_sin, hour_cos)",2,129.2203383530927,8.71284627817435e-29
+"  weekly terms (dow_sin, dow_cos, is_weekend)",3,3.0680933668582253,0.3812452084529947
+"  monthly terms (month_sin, month_cos)",2,81.72149534883896,1.796398809421743e-18
+wind direction dummies,15,80.24524591543653,6.299268420994486e-11

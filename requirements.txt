@@ -1,0 +1,13 @@
+# Beijing PM2.5 (Aotizhongxin) - NYCU Data Mining HW1.  Python 3.10.   pip install -r requirements.txt
+numpy==1.26.4
+pandas==2.2.3
+scipy==1.13.1
+scikit-learn==1.5.2
+statsmodels==0.14.4
+matplotlib==3.9.2
+joblib>=1.4
+pillow>=10                # only used by the notebooks (down-scaled figure display)
+# only to build / execute the notebooks:  python tools/build_notebooks.py
+ipykernel>=6.29
+nbformat>=5.10
+nbconvert>=7.16

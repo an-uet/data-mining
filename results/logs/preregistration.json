@@ -1,0 +1,68 @@
+{
+  "written_utc": "2026-10-04T19:07:54+00:00",
+  "hypotheses": {
+    "H1": {
+      "statement": "Recent PM2.5 concentrations are strong predictors of next-hour PM2.5.",
+      "test": "Set C vs C - PM2.5 history (current + lags + rolling); joint Wald test of the history block"
+    },
+    "H2": {
+      "statement": "Meteorological and pollutant measurements provide additional predictive information beyond historical PM2.5.",
+      "test": "Set C vs C - environment (pollutants, meteorology, wind direction, derived differences, interactions); joint Wald test of the environment block"
+    },
+    "H3": {
+      "statement": "PM2.5 has systematic hourly and weekly temporal patterns that can be captured using temporal features.",
+      "test": "Set C vs C - temporal (calendar terms and their hour interactions); joint Wald test; hourly/weekly/monthly decomposition reported"
+    },
+    "H4": {
+      "statement": "Rolling statistics of recent PM2.5 provide more stable predictive information than individual lag values.",
+      "test": "rolling-only history (C - lag) vs lag-only history (C - rolling), both keep PM2.5(t); predictive criterion = rolling-only has the lower CV-MAE by >= 1 % in >= 4 of 5 folds; inferential criterion = Diebold-Mariano test on out-of-fold absolute errors favours rolling-only (p < 0.05); stability (fold-to-fold std of MAE, coefficient spread) is reported alongside"
+    }
+  },
+  "decision_rule": {
+    "min_relative_cv_mae_increase_when_group_removed": 0.01,
+    "min_folds_worse_out_of_5": 4,
+    "alpha": 0.05,
+    "verdicts": "Supported = predictive AND inferential criterion; Partly supported = exactly one; Not supported = neither (verdicts use training CV / training inference only)"
+  },
+  "model_selection_rule": {
+    "metric": "mean CV-MAE (primary)",
+    "tie_tolerance": "1.0 standard error of the best model's fold MAEs",
+    "among_tied_families": "decided by the data properties of the TRAINING design matrix: correlated groups AND many weak predictors -> ElasticNet; strong multicollinearity -> Ridge; many weak predictors -> Lasso; else OLS",
+    "thresholds": {
+      "max_vif": 10.0,
+      "cluster_abs_rho": 0.8,
+      "min_clusters": 2,
+      "weak_abs_spearman": 0.1,
+      "weak_share": 0.5
+    }
+  },
+  "missing_value_policy": {
+    "target": "never imputed; rows with missing PM2.5(t+1) dropped",
+    "current_pm25": "must be observed",
+    "pm25_history_locf_limit_hours": 3,
+    "other_variables": "SimpleImputer inside each training fold (median numeric, most frequent wind direction)"
+  },
+  "derived_feature_rule": "a Group-4 derived quantity is kept only if |Spearman| with the target or with the next-hour change is >= 0.1 on the training rows",
+  "decision_threshold": {
+    "value_ug_m3": 10.0,
+    "status": "PROPOSED operational tolerance, not an authoritative standard; sensitivity grid reported",
+    "grid": [
+      5.0,
+      10.0,
+      15.0,
+      20.0,
+      35.0
+    ]
+  },
+  "test_policy": "locked until the design is frozen; evaluated once; never used for selection",
+  "amendments": [
+    {
+      "written_utc": "2026-10-04T19:09:10+00:00",
+      "stage": "after training CV of the linear families, before the design freeze (test set locked)",
+      "change": "a penalised family whose CV-optimal penalty is on the no-shrinkage edge of its grid is numerically OLS and is skipped in the property-implied preference list",
+      "reason": "Best mean CV-MAE: Lasso (10.508); 1 SE = 0.577; families within 1 SE: ['OLS', 'Ridge', 'Lasso', 'ElasticNet']. Training-design properties: max VIF 376.7 (PM25_roll_mean_3), 10 features with VIF > 10; 3 correlated groups (|r| >= 0.8); 50.0% of features weak (|Spearman| < 0.1; threshold 50%). Implied family: ElasticNet (correlated groups of predictors AND many weak/redundant predictors -> feature selection that keeps correlated groups together); pre-registered outcome: ElasticNet. AMENDMENT: Ridge, ElasticNet have their CV-optimal penalty on the no-shrinkage edge of the grid (Ridge: {'alpha': 0.001}, 54/54 non-zero; ElasticNet: {'alpha': 9.999999999999999e-05, 'l1_ratio': 0.9}, 54/54 non-zero), i.e. numerically OLS, so they are skipped -> chosen: Lasso ({'alpha': 0.21544346900318845}, 29/54 non-zero).",
+      "original_outcome": "ElasticNet",
+      "amended_outcome": "Lasso"
+    }
+  ]
+}

@@ -1,0 +1,26 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Results of check\_no\_data\_leakage(): perturbation, identity, prefix-invariance and fold-purity checks.}
+\label{tab:table_S06_leakage_checks}
+\begin{tabular}{lr}
+\toprule
+check & passed \\
+\midrule
+[synthetic] target = PM2.5(t+1); PM25\_t = PM2.5(t); target not among features & 1 \\
+[synthetic] lag\_k = PM2.5(t-k); rolling windows = PM2.5(t-1..t-w) (brute-force match, shifted, not centred) & 1 \\
+[synthetic] perturbing PM2.5(t$>$t0) and the label leaves all features of rows $\leq$ t0 unchanged (positive control passed) & 1 \\
+[synthetic] perturbing future meteorology / pollutants leaves rows $\leq$ t0 unchanged & 1 \\
+[synthetic] features of the first half are identical whether or not the second half exists (prefix invariance) & 1 \\
+[synthetic] calendar and meteorological features do not use PM2.5 & 1 \\
+[real training rows] target = PM2.5(t+1); PM25\_t = PM2.5(t); target not among features & 1 \\
+[real training rows] lag\_k = PM2.5(t-k); rolling windows = PM2.5(t-1..t-w) (brute-force match, shifted, not centred) & 1 \\
+[real training rows] perturbing PM2.5(t$>$t0) and the label leaves all features of rows $\leq$ t0 unchanged (positive control passed) & 1 \\
+[real training rows] perturbing future meteorology / pollutants leaves rows $\leq$ t0 unchanged & 1 \\
+[real training rows] features of the first half are identical whether or not the second half exists (prefix invariance) & 1 \\
+[real training rows] calendar and meteorological features do not use PM2.5 & 1 \\
+[CV] imputer medians, scaler mean/count and top-k ranking come from the training part of every fold; validation strictly after training & 1 \\
+[vault] test rows still locked while designing / tuning & 1 \\
+\bottomrule
+\end{tabular}
+\end{table}

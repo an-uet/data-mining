@@ -1,0 +1,6 @@
+candidate,rationale,rho_with_target,rho_with_next_hour_change,max_abs_rho,kept
+TEMP_minus_DEWP,"dew-point depression: a humidity proxy (small = moist air, hygroscopic growth / secondary aerosol formation)",-0.47087777850743395,-0.03235009638178539,0.47087777850743395,True
+PRES_chg_3h,3-hour pressure tendency: falling pressure marks stagnation / approaching fronts,-0.05210503399972875,-0.007980134079811569,0.05210503399972875,False
+TEMP_chg_3h,3-hour temperature tendency (temperature-related difference),-0.007062844749039352,-0.07028450507528411,0.07028450507528411,False
+DEWP_chg_3h,3-hour dew-point tendency: rising moisture accompanies accumulation episodes,0.14642672379692986,0.23851274710051332,0.23851274710051332,True
+PM25_PM10_ratio,fine-particle fraction PM2.5(t)/PM10(t): secondary/combustion aerosol vs coarse dust,0.32240922281301243,-0.1297803475343415,0.32240922281301243,True

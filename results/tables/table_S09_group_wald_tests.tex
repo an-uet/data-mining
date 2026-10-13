@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Joint Wald tests (HAC covariance) that all coefficients of a group are zero in the OLS companion on the standardised Set C design.}
+\label{tab:table_S09_group_wald_tests}
+\begin{tabular}{lrrr}
+\toprule
+coefficient group & df & Wald chi2 & p-value (HAC) \\
+\midrule
+PM2.5 history (current + lags + rolling) & 14 & 8100 & 0 \\
+environment (pollutants, meteorology, wind, derived, interactions) & 33 & 647.5 & 3.997e-115 \\
+temporal (calendar terms + hour interactions) & 9 & 269.3 & 8.212e-53 \\
+interactions & 6 & 171.9 & 1.773e-34 \\
+  daily terms (hour\_sin, hour\_cos) & 2 & 129.2 & 8.713e-29 \\
+  weekly terms (dow\_sin, dow\_cos, is\_weekend) & 3 & 3.068 & 0.3812 \\
+  monthly terms (month\_sin, month\_cos) & 2 & 81.72 & 1.796e-18 \\
+wind direction dummies & 15 & 80.25 & 6.299e-11 \\
+\bottomrule
+\end{tabular}
+\end{table}

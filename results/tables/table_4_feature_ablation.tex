@@ -1,0 +1,27 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Feature ablation with one linear family (Lasso), identical folds and search procedure; only the feature set changes. p = number of design columns entering the model. The last row is a sensitivity run, not a candidate. Bold = best value in the column (excluding the sensitivity row).}
+\label{tab:table_4_feature_ablation}
+\begin{tabular}{p{6.2cm}rrrrrr}
+\toprule
+Feature set & p & CV MAE & CV RMSE & Test MAE & Test RMSE & Test R$^2$ \\
+\midrule
+Set A --- raw features & 26 & 10.83 $\pm$ 1.47 & 19.89 $\pm$ 3.16 & 10.40 & 18.91 & 0.9501 \\
+Set B --- top-k correlated (raw pool) & 5 & 10.76 $\pm$ 1.42 & 19.93 $\pm$ 3.12 & 10.39 & 18.92 & 0.9500 \\
+Set B$'$ --- top-k correlated (full candidate pool) & 10 & 10.50 $\pm$ 1.42 & 19.49 $\pm$ 2.71 & \textbf{10.01} & 18.07 & 0.9544 \\
+Set C --- engineered (final) & 54 & 10.51 $\pm$ 1.29 & \textbf{19.00 $\pm$ 2.93} & 10.06 & 18.00 & 0.9547 \\
+C $-$ temporal & 45 & 10.56 $\pm$ 1.35 & 19.02 $\pm$ 2.86 & 10.02 & \textbf{17.94} & \textbf{0.9551} \\
+C $-$ lag & 47 & 10.60 $\pm$ 1.30 & 19.13 $\pm$ 3.01 & 10.19 & 18.23 & 0.9536 \\
+C $-$ rolling & 48 & 10.51 $\pm$ 1.29 & \textbf{19.00 $\pm$ 2.93} & 10.07 & 18.00 & 0.9547 \\
+C $-$ interaction & 48 & 10.57 $\pm$ 1.26 & 19.27 $\pm$ 2.92 & 10.12 & 18.14 & 0.9541 \\
+C $-$ lag $-$ rolling (keeps PM2.5(t)) & 41 & 10.65 $\pm$ 1.30 & 19.20 $\pm$ 3.06 & 10.28 & 18.40 & 0.9527 \\
+C $-$ PM2.5 history (current, lag, rolling) & 39 & 20.70 $\pm$ 1.93 & 32.02 $\pm$ 3.56 & 16.25 & 24.28 & 0.9177 \\
+C $-$ environment (pollutants, meteorology, interactions) & 21 & 10.66 $\pm$ 1.46 & 19.62 $\pm$ 2.72 & 10.07 & 18.23 & 0.9536 \\
+C $-$ pollutants & 46 & 10.56 $\pm$ 1.38 & 19.13 $\pm$ 2.97 & 10.09 & 18.15 & 0.9540 \\
+C $-$ meteorology / wind & 27 & \textbf{10.47 $\pm$ 1.32} & 19.41 $\pm$ 2.69 & 10.02 & 18.05 & 0.9545 \\
+C $-$ derived differences & 51 & 10.53 $\pm$ 1.46 & 19.23 $\pm$ 2.87 & 10.03 & 18.09 & 0.9543 \\
+A $-$ PM2.5(t)  [sensitivity] & 25 & 23.83 $\pm$ 0.59 & 38.02 $\pm$ 3.51 & 19.37 & 29.05 & 0.8821 \\
+\bottomrule
+\end{tabular}
+\end{table}

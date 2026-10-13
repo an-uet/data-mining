@@ -1,0 +1,194 @@
+{
+  "final_model": {
+    "family": "Lasso",
+    "feature_set": "C",
+    "hyperparameters": {
+      "alpha": 0.21544346900318845
+    },
+    "selection": "Best mean CV-MAE: Lasso (10.508); 1 SE = 0.577; families within 1 SE: ['OLS', 'Ridge', 'Lasso', 'ElasticNet']. Training-design properties: max VIF 376.7 (PM25_roll_mean_3), 10 features with VIF > 10; 3 correlated groups (|r| >= 0.8); 50.0% of features weak (|Spearman| < 0.1; threshold 50%). Implied family: ElasticNet (correlated groups of predictors AND many weak/redundant predictors -> feature selection that keeps correlated groups together); pre-registered outcome: ElasticNet. AMENDMENT: Ridge, ElasticNet have their CV-optimal penalty on the no-shrinkage edge of the grid (Ridge: {'alpha': 0.001}, 54/54 non-zero; ElasticNet: {'alpha': 9.999999999999999e-05, 'l1_ratio': 0.9}, 54/54 non-zero), i.e. numerically OLS, so they are skipped -> chosen: Lasso ({'alpha': 0.21544346900318845}, 29/54 non-zero)."
+  },
+  "linear_families": {
+    "OLS": {
+      "hyperparameters": {},
+      "cv_mae": 10.617195898579014
+    },
+    "Ridge": {
+      "hyperparameters": {
+        "alpha": 0.001
+      },
+      "cv_mae": 10.617197769083045
+    },
+    "Lasso": {
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "cv_mae": 10.507770746603533
+    },
+    "ElasticNet": {
+      "hyperparameters": {
+        "alpha": 9.999999999999999e-05,
+        "l1_ratio": 0.9
+      },
+      "cv_mae": 10.617271940615755
+    }
+  },
+  "ablation_variants": {
+    "A": {
+      "label": "Set A \u2014 raw features",
+      "hyperparameters": {
+        "alpha": 0.7742636826811277
+      },
+      "n_features": 26,
+      "cv_mae": 10.829886226431729
+    },
+    "B": {
+      "label": "Set B \u2014 top-k correlated (raw pool)",
+      "hyperparameters": {
+        "alpha": 0.01668100537200059,
+        "k": 5,
+        "method": "pearson"
+      },
+      "n_features": 5,
+      "cv_mae": 10.759274324623474
+    },
+    "Bp": {
+      "label": "Set B\u2032 \u2014 top-k correlated (full candidate pool)",
+      "hyperparameters": {
+        "alpha": 0.00035938136638046257,
+        "k": 10,
+        "method": "spearman"
+      },
+      "n_features": 10,
+      "cv_mae": 10.500505785129626
+    },
+    "C": {
+      "label": "Set C \u2014 engineered (final)",
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "n_features": 54,
+      "cv_mae": 10.507770746603533
+    },
+    "C-temporal": {
+      "label": "C \u2212 temporal",
+      "hyperparameters": {
+        "alpha": 0.05994842503189409
+      },
+      "n_features": 45,
+      "cv_mae": 10.55930187205014
+    },
+    "C-lag": {
+      "label": "C \u2212 lag",
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "n_features": 47,
+      "cv_mae": 10.600305751508213
+    },
+    "C-rolling": {
+      "label": "C \u2212 rolling",
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "n_features": 48,
+      "cv_mae": 10.509096822168843
+    },
+    "C-interaction": {
+      "label": "C \u2212 interaction",
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "n_features": 48,
+      "cv_mae": 10.573242428282164
+    },
+    "C-history": {
+      "label": "C \u2212 lag \u2212 rolling (keeps PM2.5(t))",
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "n_features": 41,
+      "cv_mae": 10.65294878513266
+    },
+    "C-pm25": {
+      "label": "C \u2212 PM2.5 history (current, lag, rolling)",
+      "hyperparameters": {
+        "alpha": 0.7742636826811277
+      },
+      "n_features": 39,
+      "cv_mae": 20.695869235065953
+    },
+    "C-env": {
+      "label": "C \u2212 environment (pollutants, meteorology, interactions)",
+      "hyperparameters": {
+        "alpha": 0.01668100537200059
+      },
+      "n_features": 21,
+      "cv_mae": 10.663308790263688
+    },
+    "C-pollutants": {
+      "label": "C \u2212 pollutants",
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "n_features": 46,
+      "cv_mae": 10.562747749256529
+    },
+    "C-meteo": {
+      "label": "C \u2212 meteorology / wind",
+      "hyperparameters": {
+        "alpha": 0.01668100537200059
+      },
+      "n_features": 27,
+      "cv_mae": 10.47352462586225
+    },
+    "C-envdiff": {
+      "label": "C \u2212 derived differences",
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "n_features": 51,
+      "cv_mae": 10.53362521745056
+    },
+    "A-pm25": {
+      "label": "A \u2212 PM2.5(t)  [sensitivity]",
+      "hyperparameters": {
+        "alpha": 2.782559402207126
+      },
+      "n_features": 25,
+      "cv_mae": 23.834023133617503
+    }
+  },
+  "baselines": {
+    "mean": {
+      "label": "Training mean",
+      "hyperparameters": {},
+      "cv_mae": 62.45637956582133
+    },
+    "persistence": {
+      "label": "Persistence: PM2.5(t+1) = PM2.5(t)",
+      "hyperparameters": {},
+      "cv_mae": 10.68891760904685
+    },
+    "ols_single": {
+      "label": "Single-feature OLS: PM2.5(t) -> PM2.5(t+1)",
+      "hyperparameters": {},
+      "cv_mae": 10.91410216427646
+    },
+    "rf_raw": {
+      "label": "Random Forest (raw features)",
+      "hyperparameters": {
+        "max_features": 0.66,
+        "min_samples_leaf": 20
+      },
+      "cv_mae": 11.135916834106121
+    },
+    "hgb_raw": {
+      "label": "Gradient Boosting (raw features)",
+      "hyperparameters": {
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 100
+      },
+      "cv_mae": 11.763874655459535
+    }
+  }
+}

@@ -1,0 +1,9 @@
+group,n_features,non_zero,sum_abs_coef,ci_excludes_zero,largest_effects
+current PM2.5,1,1,79.73736063443762,1,PM25_t +79.74
+lag,7,3,8.437488126503018,1,PM25_lag_1 -8.12; PM25_lag_12 +0.28; PM25_lag_6 +0.04
+interaction,6,4,4.438001983762596,2,WSPM_x_PM25 -3.29; TEMP_x_hour_sin +0.94; WSPM_x_PM10 -0.18
+meteorology / wind,19,9,4.740918132262088,6,WSPM -2.62; RAIN -0.71; wd_SW +0.37
+derived differences,3,3,5.414034975399394,3,DEWP_chg_3h +2.54; TEMP_minus_DEWP -2.18; PM25_PM10_ratio -0.70
+pollutants,5,4,5.421536793898438,4,PM10 +2.46; NO2 +1.76; SO2 +0.65
+temporal,7,3,3.7467219734622583,3,hour_cos -1.62; hour_sin -1.14; month_sin +0.98
+rolling,6,2,0.5225000106753596,0,PM25_roll_mean_24 +0.49; PM25_roll_std_24 -0.03

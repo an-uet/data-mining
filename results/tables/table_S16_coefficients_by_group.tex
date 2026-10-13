@@ -1,0 +1,20 @@
+\begin{table}[t]
+\centering
+\small
+\caption{Final model: coefficients per feature group ($\mu$g/m$^3$ per SD): number of non-zero coefficients, sum of absolute coefficients, bootstrap intervals excluding zero and the largest effects.}
+\label{tab:table_S16_coefficients_by_group}
+\begin{tabular}{lrrrrr}
+\toprule
+group & n\_features & non\_zero & sum\_abs\_coef & ci\_excludes\_zero & largest\_effects \\
+\midrule
+current PM2.5 & 1 & 1 & 79.74 & 1 & PM25\_t +79.74 \\
+lag & 7 & 3 & 8.44 & 1 & PM25\_lag\_1 -8.12; PM25\_lag\_12 +0.28; PM25\_lag\_6 +0.04 \\
+interaction & 6 & 4 & 4.44 & 2 & WSPM\_x\_PM25 -3.29; TEMP\_x\_hour\_sin +0.94; WSPM\_x\_PM10 -0.18 \\
+meteorology / wind & 19 & 9 & 4.74 & 6 & WSPM -2.62; RAIN -0.71; wd\_SW +0.37 \\
+derived differences & 3 & 3 & 5.41 & 3 & DEWP\_chg\_3h +2.54; TEMP\_minus\_DEWP -2.18; PM25\_PM10\_ratio -0.70 \\
+pollutants & 5 & 4 & 5.42 & 4 & PM10 +2.46; NO2 +1.76; SO2 +0.65 \\
+temporal & 7 & 3 & 3.75 & 3 & hour\_cos -1.62; hour\_sin -1.14; month\_sin +0.98 \\
+rolling & 6 & 2 & 0.52 & 0 & PM25\_roll\_mean\_24 +0.49; PM25\_roll\_std\_24 -0.03 \\
+\bottomrule
+\end{tabular}
+\end{table}

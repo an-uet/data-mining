@@ -1,0 +1,35 @@
+{
+  "name": "Beijing Multi-Site Air-Quality Data (UCI Machine Learning Repository, id 501)",
+  "doi": "10.24432/C5RK5G",
+  "url": "https://archive.ics.uci.edu/dataset/501/beijing+multi+site+air+quality+data",
+  "paper": "Zhang, S., Guo, B., Dong, A., He, J., Xu, Z., Chen, S.X. (2017) Cautionary tales on air-quality improvement in Beijing. Proceedings of the Royal Society A 473, 20170457.",
+  "note": "The snippet fetch_ucirepo(id=381) returns a DIFFERENT dataset ('Beijing PM2.5', 43,824 rows, US-embassy station, columns cbwd/Iws/Is/Ir, no PM10/SO2/NO2/CO/O3/RAIN/WSPM). The Aotizhongxin file belongs to id 501, which ucimlrepo cannot import.",
+  "file": "PRSA_Data_Aotizhongxin_20130301-20170228.csv",
+  "sha256": "a94fbcfc71708b6ffdc033360163d91efb7f675e496f6b5860929aa96b96351b",
+  "rows": 35064,
+  "station": "Aotizhongxin",
+  "timeline": {
+    "monotonic_increasing": true,
+    "duplicated_timestamps": 0,
+    "sampling_intervals": {
+      "0 days 01:00:00": 35063
+    },
+    "start": "2013-03-01 00:00:00",
+    "end": "2017-02-28 23:00:00",
+    "expected_hourly_stamps": 35064,
+    "observed_stamps": 35064,
+    "missing_timestamps": 0,
+    "span_days": 1460.96
+  },
+  "identifier_columns": {
+    "dropped": [
+      "No",
+      "station"
+    ],
+    "constant_values": {
+      "station": [
+        "Aotizhongxin"
+      ]
+    }
+  }
+}

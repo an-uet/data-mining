@@ -1,0 +1,516 @@
+{
+  "ablation_variants": {
+    "A": {
+      "cv_mae": 10.829886226431729,
+      "hyperparameters": {
+        "alpha": 0.7742636826811277
+      },
+      "label": "Set A \u2014 raw features",
+      "n_features": 26
+    },
+    "A-pm25": {
+      "cv_mae": 23.834023133617503,
+      "hyperparameters": {
+        "alpha": 2.782559402207126
+      },
+      "label": "A \u2212 PM2.5(t)  [sensitivity]",
+      "n_features": 25
+    },
+    "B": {
+      "cv_mae": 10.759274324623474,
+      "hyperparameters": {
+        "alpha": 0.01668100537200059,
+        "k": 5,
+        "method": "pearson"
+      },
+      "label": "Set B \u2014 top-k correlated (raw pool)",
+      "n_features": 5
+    },
+    "Bp": {
+      "cv_mae": 10.500505785129626,
+      "hyperparameters": {
+        "alpha": 0.00035938136638046257,
+        "k": 10,
+        "method": "spearman"
+      },
+      "label": "Set B\u2032 \u2014 top-k correlated (full candidate pool)",
+      "n_features": 10
+    },
+    "C": {
+      "cv_mae": 10.507770746603533,
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "label": "Set C \u2014 engineered (final)",
+      "n_features": 54
+    },
+    "C-env": {
+      "cv_mae": 10.663308790263688,
+      "hyperparameters": {
+        "alpha": 0.01668100537200059
+      },
+      "label": "C \u2212 environment (pollutants, meteorology, interactions)",
+      "n_features": 21
+    },
+    "C-envdiff": {
+      "cv_mae": 10.53362521745056,
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "label": "C \u2212 derived differences",
+      "n_features": 51
+    },
+    "C-history": {
+      "cv_mae": 10.65294878513266,
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "label": "C \u2212 lag \u2212 rolling (keeps PM2.5(t))",
+      "n_features": 41
+    },
+    "C-interaction": {
+      "cv_mae": 10.573242428282164,
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "label": "C \u2212 interaction",
+      "n_features": 48
+    },
+    "C-lag": {
+      "cv_mae": 10.600305751508213,
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "label": "C \u2212 lag",
+      "n_features": 47
+    },
+    "C-meteo": {
+      "cv_mae": 10.47352462586225,
+      "hyperparameters": {
+        "alpha": 0.01668100537200059
+      },
+      "label": "C \u2212 meteorology / wind",
+      "n_features": 27
+    },
+    "C-pm25": {
+      "cv_mae": 20.695869235065953,
+      "hyperparameters": {
+        "alpha": 0.7742636826811277
+      },
+      "label": "C \u2212 PM2.5 history (current, lag, rolling)",
+      "n_features": 39
+    },
+    "C-pollutants": {
+      "cv_mae": 10.562747749256529,
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "label": "C \u2212 pollutants",
+      "n_features": 46
+    },
+    "C-rolling": {
+      "cv_mae": 10.509096822168843,
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      },
+      "label": "C \u2212 rolling",
+      "n_features": 48
+    },
+    "C-temporal": {
+      "cv_mae": 10.55930187205014,
+      "hyperparameters": {
+        "alpha": 0.05994842503189409
+      },
+      "label": "C \u2212 temporal",
+      "n_features": 45
+    }
+  },
+  "baselines": {
+    "hgb_raw": {
+      "cv_mae": 11.763874655459535,
+      "hyperparameters": {
+        "max_leaf_nodes": 15,
+        "min_samples_leaf": 100
+      },
+      "label": "Gradient Boosting (raw features)"
+    },
+    "mean": {
+      "cv_mae": 62.45637956582133,
+      "hyperparameters": {},
+      "label": "Training mean"
+    },
+    "ols_single": {
+      "cv_mae": 10.91410216427646,
+      "hyperparameters": {},
+      "label": "Single-feature OLS: PM2.5(t) -> PM2.5(t+1)"
+    },
+    "persistence": {
+      "cv_mae": 10.68891760904685,
+      "hyperparameters": {},
+      "label": "Persistence: PM2.5(t+1) = PM2.5(t)"
+    },
+    "rf_raw": {
+      "cv_mae": 11.135916834106121,
+      "hyperparameters": {
+        "max_features": 0.66,
+        "min_samples_leaf": 20
+      },
+      "label": "Random Forest (raw features)"
+    }
+  },
+  "cv": {
+    "folds": [
+      {
+        "fold": 1,
+        "train_rows": [
+          0,
+          4334
+        ],
+        "train_time": [
+          "2013-03-08 00:00:00",
+          "2013-09-05 02:00:00"
+        ],
+        "val_rows": [
+          4335,
+          8667
+        ],
+        "val_time": [
+          "2013-09-05 03:00:00",
+          "2014-03-09 03:00:00"
+        ]
+      },
+      {
+        "fold": 2,
+        "train_rows": [
+          0,
+          8667
+        ],
+        "train_time": [
+          "2013-03-08 00:00:00",
+          "2014-03-09 03:00:00"
+        ],
+        "val_rows": [
+          8668,
+          13000
+        ],
+        "val_time": [
+          "2014-03-09 04:00:00",
+          "2014-09-14 13:00:00"
+        ]
+      },
+      {
+        "fold": 3,
+        "train_rows": [
+          0,
+          13000
+        ],
+        "train_time": [
+          "2013-03-08 00:00:00",
+          "2014-09-14 13:00:00"
+        ],
+        "val_rows": [
+          13001,
+          17333
+        ],
+        "val_time": [
+          "2014-09-14 14:00:00",
+          "2015-04-15 08:00:00"
+        ]
+      },
+      {
+        "fold": 4,
+        "train_rows": [
+          0,
+          17333
+        ],
+        "train_time": [
+          "2013-03-08 00:00:00",
+          "2015-04-15 08:00:00"
+        ],
+        "val_rows": [
+          17334,
+          21666
+        ],
+        "val_time": [
+          "2015-04-15 09:00:00",
+          "2015-10-31 08:00:00"
+        ]
+      },
+      {
+        "fold": 5,
+        "train_rows": [
+          0,
+          21666
+        ],
+        "train_time": [
+          "2013-03-08 00:00:00",
+          "2015-10-31 08:00:00"
+        ],
+        "val_rows": [
+          21667,
+          25999
+        ],
+        "val_time": [
+          "2015-10-31 09:00:00",
+          "2016-05-12 17:00:00"
+        ]
+      }
+    ],
+    "scheme": "TimeSeriesSplit(5) expanding"
+  },
+  "data": {
+    "n_rows": 35064,
+    "sha256": "a94fbcfc71708b6ffdc033360163d91efb7f675e496f6b5860929aa96b96351b",
+    "station": "Aotizhongxin"
+  },
+  "decision_threshold": 10.0,
+  "derived_features": [
+    "TEMP_minus_DEWP",
+    "DEWP_chg_3h",
+    "PM25_PM10_ratio"
+  ],
+  "feature_sets": {
+    "A": {
+      "categorical": [
+        "wd"
+      ],
+      "helpers": [],
+      "numeric": [
+        "PM25_t",
+        "PM10",
+        "SO2",
+        "NO2",
+        "CO",
+        "O3",
+        "TEMP",
+        "PRES",
+        "DEWP",
+        "RAIN",
+        "WSPM"
+      ],
+      "pairs": []
+    },
+    "C": {
+      "categorical": [
+        "wd"
+      ],
+      "helpers": [
+        "DEWP"
+      ],
+      "numeric": [
+        "PM25_t",
+        "PM25_lag_1",
+        "PM25_lag_3",
+        "PM25_lag_6",
+        "PM25_lag_12",
+        "PM25_lag_24",
+        "PM25_lag_48",
+        "PM25_lag_168",
+        "PM25_roll_mean_3",
+        "PM25_roll_mean_6",
+        "PM25_roll_mean_12",
+        "PM25_roll_mean_24",
+        "PM25_roll_std_6",
+        "PM25_roll_std_24",
+        "hour_sin",
+        "hour_cos",
+        "dow_sin",
+        "dow_cos",
+        "month_sin",
+        "month_cos",
+        "is_weekend",
+        "PM10",
+        "SO2",
+        "NO2",
+        "CO",
+        "O3",
+        "TEMP",
+        "PRES",
+        "RAIN",
+        "WSPM",
+        "TEMP_minus_DEWP",
+        "DEWP_chg_3h",
+        "PM25_PM10_ratio"
+      ],
+      "pairs": [
+        [
+          "TEMP",
+          "DEWP",
+          "TEMP_x_DEWP"
+        ],
+        [
+          "TEMP",
+          "PM10",
+          "TEMP_x_PM10"
+        ],
+        [
+          "WSPM",
+          "PM10",
+          "WSPM_x_PM10"
+        ],
+        [
+          "WSPM",
+          "PM25_t",
+          "WSPM_x_PM25"
+        ],
+        [
+          "TEMP",
+          "hour_sin",
+          "TEMP_x_hour_sin"
+        ],
+        [
+          "DEWP",
+          "hour_sin",
+          "DEWP_x_hour_sin"
+        ]
+      ]
+    },
+    "pool": {
+      "categorical": [
+        "wd"
+      ],
+      "helpers": [],
+      "numeric": [
+        "PM25_t",
+        "PM25_lag_1",
+        "PM25_lag_3",
+        "PM25_lag_6",
+        "PM25_lag_12",
+        "PM25_lag_24",
+        "PM25_lag_48",
+        "PM25_lag_168",
+        "PM25_roll_mean_3",
+        "PM25_roll_mean_6",
+        "PM25_roll_mean_12",
+        "PM25_roll_mean_24",
+        "PM25_roll_std_6",
+        "PM25_roll_std_24",
+        "hour_sin",
+        "hour_cos",
+        "dow_sin",
+        "dow_cos",
+        "month_sin",
+        "month_cos",
+        "is_weekend",
+        "PM10",
+        "SO2",
+        "NO2",
+        "CO",
+        "O3",
+        "TEMP",
+        "PRES",
+        "DEWP",
+        "RAIN",
+        "WSPM",
+        "TEMP_minus_DEWP",
+        "PRES_chg_3h",
+        "TEMP_chg_3h",
+        "DEWP_chg_3h",
+        "PM25_PM10_ratio"
+      ],
+      "pairs": [
+        [
+          "TEMP",
+          "DEWP",
+          "TEMP_x_DEWP"
+        ],
+        [
+          "TEMP",
+          "PM10",
+          "TEMP_x_PM10"
+        ],
+        [
+          "WSPM",
+          "PM10",
+          "WSPM_x_PM10"
+        ],
+        [
+          "WSPM",
+          "PM25_t",
+          "WSPM_x_PM25"
+        ],
+        [
+          "TEMP",
+          "hour_sin",
+          "TEMP_x_hour_sin"
+        ],
+        [
+          "DEWP",
+          "hour_sin",
+          "DEWP_x_hour_sin"
+        ]
+      ]
+    }
+  },
+  "final_model": {
+    "family": "Lasso",
+    "feature_set": "C",
+    "hyperparameters": {
+      "alpha": 0.21544346900318845
+    },
+    "selection": "Best mean CV-MAE: Lasso (10.508); 1 SE = 0.577; families within 1 SE: ['OLS', 'Ridge', 'Lasso', 'ElasticNet']. Training-design properties: max VIF 376.7 (PM25_roll_mean_3), 10 features with VIF > 10; 3 correlated groups (|r| >= 0.8); 50.0% of features weak (|Spearman| < 0.1; threshold 50%). Implied family: ElasticNet (correlated groups of predictors AND many weak/redundant predictors -> feature selection that keeps correlated groups together); pre-registered outcome: ElasticNet. AMENDMENT: Ridge, ElasticNet have their CV-optimal penalty on the no-shrinkage edge of the grid (Ridge: {'alpha': 0.001}, 54/54 non-zero; ElasticNet: {'alpha': 9.999999999999999e-05, 'l1_ratio': 0.9}, 54/54 non-zero), i.e. numerically OLS, so they are skipped -> chosen: Lasso ({'alpha': 0.21544346900318845}, 29/54 non-zero)."
+  },
+  "libraries": {
+    "matplotlib": "3.9.2",
+    "numpy": "1.26.4",
+    "pandas": "2.2.3",
+    "python": "3.10.21",
+    "scikit-learn": "1.5.2",
+    "scipy": "1.13.1",
+    "statsmodels": "0.14.4"
+  },
+  "linear_families": {
+    "ElasticNet": {
+      "cv_mae": 10.617271940615755,
+      "hyperparameters": {
+        "alpha": 9.999999999999999e-05,
+        "l1_ratio": 0.9
+      }
+    },
+    "Lasso": {
+      "cv_mae": 10.507770746603533,
+      "hyperparameters": {
+        "alpha": 0.21544346900318845
+      }
+    },
+    "OLS": {
+      "cv_mae": 10.617195898579014,
+      "hyperparameters": {}
+    },
+    "Ridge": {
+      "cv_mae": 10.617197769083045,
+      "hyperparameters": {
+        "alpha": 0.001
+      }
+    }
+  },
+  "missing_value_policy": {
+    "locf_limit_hours": 3,
+    "usable_training_rows": 26000
+  },
+  "seed": 42,
+  "slice_reference_from_training": {
+    "abs_change_median": 6.0,
+    "abs_change_p90": 25.0,
+    "fall_p95": 43.0,
+    "rise_p95": 33.0,
+    "wspm_median": 1.4,
+    "y_max": 898.0,
+    "y_q25": 23.0,
+    "y_q75": 116.0,
+    "y_q95": 247.0,
+    "y_q99": 366.0
+  },
+  "split": {
+    "n_test": 7013,
+    "n_total": 35063,
+    "n_train": 28050,
+    "shuffled": false,
+    "split_index": 28050,
+    "test_end": "2017-02-28 22:00:00",
+    "test_fraction": 0.2,
+    "test_start": "2016-05-12 18:00:00",
+    "train_end": "2016-05-12 17:00:00",
+    "train_start": "2013-03-01 00:00:00"
+  }
+}

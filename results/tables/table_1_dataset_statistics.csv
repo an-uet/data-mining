@@ -1,0 +1,10 @@
+item,value
+Source,"UCI 'Beijing Multi-Site Air-Quality Data' (id 501), DOI 10.24432/C5RK5G; station Aotizhongxin"
+Rows x columns (file),"35,064 x 18 (hourly, 2013-03-01 to 2017-02-28; 1460.96 days)"
+Sampling,"hourly, regular (0 missing / 0 duplicated timestamps)"
+Dropped identifier columns,"No (row counter), station (constant)"
+Missing values (whole file),"PM2.5 925, PM10 718, SO2 935, NO2 1023, CO 1776, O3 1719, TEMP 20, PRES 20, DEWP 20, RAIN 20, wd 81, WSPM 14"
+Task,predict PM2.5 at t+1 (µg/m³) from information available at hour t
+Train / test split (rows),"28,050 / 7,013 hours (2013-03-01 to 2016-05-12 | 2016-05-12 to 2017-02-28)"
+Usable rows (train / test),"26,000 / 6,752 (missing target, missing current PM2.5 or unusable history excluded)"
+Candidate features / Set A / Set C (design columns),37 / 26 / 54
