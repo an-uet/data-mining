@@ -4,7 +4,7 @@
 |---|---|
 | Course | NYCU Data Mining 2026 — HW1: Linear Regression |
 | Team ID | G08 |
-| Members | Le Thi An - 314540018, Le Quang Thang - 414540003, Pongpat (余蓬勃) - 314540039,  夏里恩 - |
+| Members | Le Thi An - 314540018, Le Quang Thang - 414540003, Pongpat Weesommai - 310540028,  Syahrizal M. N. - 314540039 |
 
 ## Problem
 Forecast the PM2.5 concentration (µg/m³) at the Aotizhongxin station in Beijing **one hour ahead**, using only information available at the current hour t: X(t) → PM2.5(t+1).
